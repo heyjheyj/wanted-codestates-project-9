@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import Search from './pages/Search';
 import styled from 'styled-components';
 import Issue from './pages/Issue';
