@@ -1,26 +1,48 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const ItemCard = ({ repo, onSelectRepo }) => {
-  console.log(repo);
-
+const ItemCard = (props) => {
   const selectRepo = () => {
-    onSelectRepo();
+    props.onSelectRepo(props.repo);
+  };
+
+  const deleteRepo = (e) => {
+    e.stopPropagation();
+    props.onDeleteRepo(props.repo);
   };
 
   return (
-    <Item onClick={selectRepo}>
-      <User>
-        <UserProfile src={`http://github.com/${repo.owner.login}.png`} />
-        <UserName>{repo.owner.login}</UserName>
-      </User>
-      <Repository>{repo.name}</Repository>
-      {repo.language && (
-        <LanguageInfo>
-          Language: <Language>{repo.language}</Language>
-        </LanguageInfo>
+    <>
+      {props.onSelectRepo ? (
+        <Item onClick={selectRepo}>
+          <User>
+            <UserProfile
+              src={`http://github.com/${props.repo.owner.login}.png`}
+            />
+            <UserName>{props.repo.owner.login}</UserName>
+          </User>
+          <Repository>{props.repo.name}</Repository>
+          {props.repo.language && (
+            <LanguageInfo>
+              Language: <Language>{props.repo.language}</Language>
+            </LanguageInfo>
+          )}
+        </Item>
+      ) : (
+        <SelectedItem onClick={() => props.moveToSelectedRepo(props.repo)}>
+          <SelectedUser>
+            <UserSection>
+              <UserProfile
+                src={`http://github.com/${props.repo.owner.login}.png`}
+              />
+              <UserName>{props.repo.owner.login}</UserName>
+            </UserSection>
+            <DeleteButton onClick={deleteRepo}>삭제</DeleteButton>
+          </SelectedUser>
+          <Repository>{props.repo.name}</Repository>
+        </SelectedItem>
       )}
-    </Item>
+    </>
   );
 };
 
@@ -86,4 +108,51 @@ const Language = styled.span`
   border-radius: 5px;
   color: black;
   margin-left: 2px;
+`;
+
+const SelectedUser = styled.div`
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid #ddd;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const SelectedItem = styled.li`
+  list-style: none;
+  padding: 6px;
+  width: 90%;
+  margin: auto;
+  margin-top: 5px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: white;
+  &:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+  }
+`;
+
+const DeleteButton = styled.button`
+  width: 40px;
+  height: 20px;
+  background-color: #f0f0f0;
+  border: none;
+  margin-right: 10px;
+  border-radius: 5px;
+  color: gray;
+  cursor: pointer;
+  transition: transform 200ms ease-in;
+  &:hover {
+    transform: scale(1.05);
+    background-color: #00a0ff50;
+    color: black;
+  }
+`;
+
+const UserSection = styled.section`
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  padding-bottom: 5px;
 `;

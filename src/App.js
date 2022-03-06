@@ -6,9 +6,7 @@ import { useState } from 'react';
 
 function App() {
   const [repository, setRepository] = useState([]);
-
-  const [user, setUser] = useState([]);
-  const [repo, setRepo] = useState([]);
+  const [userInfo, setUserInfo] = useState([]);
 
   return (
     <AppComponent>
@@ -19,12 +17,15 @@ function App() {
             <Search
               repository={repository}
               setRepository={setRepository}
-              setUser={setUser}
-              setRepo={setRepo}
+              setUserInfo={setUserInfo}
+              userInfo={userInfo}
             />
           }
         />
-        <Route path="/issue" element={<Issue user={user} repo={repo} />} />
+        <Route
+          path="/issue/:user/:repo"
+          element={<Issue userInfo={userInfo} />}
+        />
       </Routes>
     </AppComponent>
   );

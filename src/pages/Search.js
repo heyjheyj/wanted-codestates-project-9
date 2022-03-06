@@ -2,12 +2,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { Octokit } from '@octokit/core';
 import ItemCard from '../components/ItemCard';
+import { useNavigate } from 'react-router-dom';
 
 const octokit = new Octokit({ auth: `${process.env.REACT_APP_GITHUB_TOKEN}` });
 
-const Search = ({ setRepository, setUser, setRepo, repository }) => {
+const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
   const [keyword, setKeyword] = useState('');
+  const [selectedRepo, setSelectedRepo] = useState([]);
   const inputRef = useRef();
+
+  const navigate = useNavigate();
 
   const onChagneText = (e) => {
     setKeyword(e.target.value);
@@ -25,16 +29,48 @@ const Search = ({ setRepository, setUser, setRepo, repository }) => {
       let data = result.data.items;
       setRepository(result.data.items);
       console.log(data);
-      // data.map((item) => {
-      //   let [user, repo] = item.full_name.split('/');
-      //   setUser(user);
-      //   setRepo(repo);
-      //   console.log(user, repo);
-      // });
     } catch (err) {
       console.log(err);
     }
     inputRef.current.value = '';
+  };
+
+  const onSelectRepo = (repo) => {
+    console.log(repo);
+    if (selectedRepo.length > 3) {
+      alert('최대 4개의 Repository만 저장할 수 있습니다.');
+    } else if (selectedRepo.length < 4) {
+      selectedRepo.map((selected) => {
+        if (selected.id === repo.id) {
+          return;
+        }
+      });
+
+      console.log('실행됨');
+      let [userName, repoName] = repo.full_name.split('/');
+      console.log(userName, repoName);
+      setSelectedRepo([...selectedRepo, repo]);
+      setUserInfo([
+        ...userInfo,
+        {
+          id: repo.id,
+          user: userName,
+          repo: repoName,
+        },
+      ]);
+    }
+  };
+
+  const onDeleteRepo = (repo) => {
+    let result = selectedRepo.filter((selected) => selected.id !== repo.id);
+    setSelectedRepo(result);
+  };
+
+  const moveToSelectedRepo = (repo) => {
+    userInfo.map(
+      (user) =>
+        user.id === repo.id && navigate(`/issue/${user.user}/${user.repo}`),
+    );
   };
 
   return (
@@ -52,10 +88,30 @@ const Search = ({ setRepository, setUser, setRepo, repository }) => {
           <SearchButton type="submit" value="검색" onClick={onSearch} />
         </SearchForm>
       </Header>
-      <RepositoryList>
-        {repository?.length > 0 &&
-          repository.map((repo) => <ItemCard repo={repo} />)}
-      </RepositoryList>
+      <SearchResult>
+        <ResultRepository selectedRepo={selectedRepo}>
+          <RepositoryList>
+            {repository?.length > 0 &&
+              repository.map((repo, index) => (
+                <ItemCard key={index} repo={repo} onSelectRepo={onSelectRepo} />
+              ))}
+          </RepositoryList>
+          <Pagenation>1,2,3,4,5,6,7,...</Pagenation>
+        </ResultRepository>
+        {selectedRepo.length > 0 && (
+          <SaveRepo>
+            <SaveRepoTitle>Saved Repository</SaveRepoTitle>
+            {selectedRepo?.map((repo, index) => (
+              <ItemCard
+                key={index}
+                repo={repo}
+                onDeleteRepo={onDeleteRepo}
+                moveToSelectedRepo={moveToSelectedRepo}
+              />
+            ))}
+          </SaveRepo>
+        )}
+      </SearchResult>
     </SearchComponent>
   );
 };
@@ -106,21 +162,60 @@ const SearchButton = styled.input`
   border: none;
   border-radius: 3px;
   font-size: 16px;
+  color: gray;
+  cursor: pointer;
+  transition: transform 200ms ease-in;
   &:hover {
-    background: #ddd;
-    cursor: pointer;
+    transform: scale(1.05);
+    background-color: #00a0ff50;
+    color: black;
   }
+`;
+
+const ResultRepository = styled.div`
+  margin: auto;
+  width: ${(props) => (props.selectedRepo.length > 0 ? '60%' : '93%')};
+  height: 100%;
+  margin: 20px;
+  overflow: scroll;
 `;
 
 const RepositoryList = styled.ul`
   margin: auto;
-  margin-top: 20px;
-  width: 93%;
-  padding: 20px;
-  height: 100%;
-  border: 1px solid gray;
-  overflow: scroll;
+  padding: 0;
+  height: auto;
+  width: 97%;
   display: flex;
   flex-wrap: wrap;
+  padding-bottom: 30px;
   justify-content: space-between;
+`;
+
+const SaveRepo = styled.div`
+  width: 40%;
+  height: 100%;
+  background-color: #ddd;
+`;
+
+const SaveRepoTitle = styled.h3`
+  margin: 0;
+  padding: 0;
+  margin: 20px 0 10px 20px;
+`;
+
+const SearchResult = styled.div`
+  width: 100%;
+  height: 100%;
+  border: 1px solid gray;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+`;
+
+const Pagenation = styled.div`
+  width: 100%;
+  height: 30px;
+  margin-bottom: 30px;
+  text-align: center;
 `;
