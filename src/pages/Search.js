@@ -27,7 +27,7 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
         q: keyword,
       });
       let data = result.data.items;
-      setRepository(result.data.items);
+      setRepository(data);
       console.log(data);
     } catch (err) {
       console.log(err);
@@ -36,28 +36,25 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
   };
 
   const onSelectRepo = (repo) => {
-    console.log(repo);
-    if (selectedRepo.length > 3) {
+    if (selectedRepo.length <= 3) {
+      if (selectedRepo.findIndex((item) => item.id === repo.id) === -1) {
+        setSelectedRepo([...selectedRepo, repo]);
+        let [userName, repoName] = repo.full_name.split('/');
+        setUserInfo([
+          ...userInfo,
+          {
+            id: repo.id,
+            user: userName,
+            repo: repoName,
+          },
+        ]);
+      }
+      // let result = selectedRepo.filter((select) => select.id !== repo.id);
+      // console.log(result);
+      // result.length === selectedRepo.length &&
+      // setSelectedRepo([...selectedRepo, repo]);
+    } else if (selectedRepo.length > 3) {
       alert('최대 4개의 Repository만 저장할 수 있습니다.');
-    } else if (selectedRepo.length < 4) {
-      selectedRepo.map((selected) => {
-        if (selected.id === repo.id) {
-          return;
-        }
-      });
-
-      console.log('실행됨');
-      let [userName, repoName] = repo.full_name.split('/');
-      console.log(userName, repoName);
-      setSelectedRepo([...selectedRepo, repo]);
-      setUserInfo([
-        ...userInfo,
-        {
-          id: repo.id,
-          user: userName,
-          repo: repoName,
-        },
-      ]);
     }
   };
 

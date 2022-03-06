@@ -56,6 +56,7 @@ const Item = styled.li`
   border: 1px solid #ddd;
   border-radius: 10px;
   background-color: white;
+  overflow: hidden;
   &:hover {
     background-color: #f0f0f0;
     cursor: pointer;

@@ -8,6 +8,8 @@ function App() {
   const [repository, setRepository] = useState([]);
   const [userInfo, setUserInfo] = useState([]);
 
+  console.log(userInfo);
+
   return (
     <AppComponent>
       <Routes>

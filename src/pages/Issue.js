@@ -18,7 +18,7 @@ const Issue = (props) => {
 
   useEffect(() => {
     if (user && repo) {
-      let page = 2;
+      let page = 1;
       let res = searchIssues(page);
       console.log(res);
     } else {
