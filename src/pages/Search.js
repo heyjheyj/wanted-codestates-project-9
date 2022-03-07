@@ -3,12 +3,16 @@ import styled from 'styled-components';
 import { Octokit } from '@octokit/core';
 import ItemCard from '../components/ItemCard';
 import { useNavigate } from 'react-router-dom';
+import PageComponent from '../components/Pagenation';
 
 const octokit = new Octokit({ auth: `${process.env.REACT_APP_GITHUB_TOKEN}` });
 
 const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
   const [keyword, setKeyword] = useState('');
   const [selectedRepo, setSelectedRepo] = useState([]);
+
+  const [page, setPage] = useState(1);
+
   const inputRef = useRef();
 
   const navigate = useNavigate();
@@ -93,7 +97,9 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
                 <ItemCard key={index} repo={repo} onSelectRepo={onSelectRepo} />
               ))}
           </RepositoryList>
-          <Pagenation>1,2,3,4,5,6,7,...</Pagenation>
+          <Pagenation>
+            <PageComponent page={page} setPage={setPage} />
+          </Pagenation>
         </ResultRepository>
         {selectedRepo.length > 0 && (
           <SaveRepo>
