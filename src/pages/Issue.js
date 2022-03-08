@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Octokit } from '@octokit/core';
 import { useParams } from 'react-router-dom';
 import IssueCard from '../components/IssueCard';
@@ -10,12 +10,15 @@ const Issue = (props) => {
   const { user, repo } = useParams();
   const [issues, setIssues] = useState([]);
 
-  const searchIssues = async (page) => {
-    let res = await octokit.request(
-      `GET /repos/${user}/${repo}/issues?page=${page}`,
-    );
-    setIssues(res.data);
-  };
+  const searchIssues = useCallback(
+    async (page) => {
+      let res = await octokit.request(
+        `GET /repos/${user}/${repo}/issues?page=${page}`,
+      );
+      setIssues(res.data);
+    },
+    [repo, user],
+  );
 
   useEffect(() => {
     if (user && repo) {
@@ -25,7 +28,7 @@ const Issue = (props) => {
     } else {
       return;
     }
-  }, [user, repo]);
+  }, [user, repo, searchIssues]);
 
   return (
     <IssueComponent>
@@ -89,4 +92,5 @@ const IssueContainer = styled.ul`
   border: 1px solid #ddd;
   display: flex;
   flex-direction: column;
+  overflow: scroll;
 `;

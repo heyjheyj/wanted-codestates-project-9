@@ -13,13 +13,13 @@ function PageComponent({ page, setPage, repository }) {
     } else if (page > start + 9) {
       setStart(start + 1);
     }
-  }, [page]);
+  }, [page, start]);
 
   useEffect(() => {
     if (repository && repository.length < 30) {
       setLast(page);
     }
-  }, [repository]);
+  }, [repository, page]);
 
   return (
     <>

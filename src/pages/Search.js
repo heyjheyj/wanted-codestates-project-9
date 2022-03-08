@@ -49,6 +49,10 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
     if (selectedRepo.length <= 3) {
       if (selectedRepo.findIndex((item) => item.id === repo.id) === -1) {
         setSelectedRepo([...selectedRepo, repo]);
+        window.localStorage.setItem(
+          'repos',
+          JSON.stringify([...selectedRepo, repo]),
+        );
         let [userName, repoName] = repo.full_name.split('/');
         setUserInfo([
           ...userInfo,
@@ -77,13 +81,21 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
   };
 
   useEffect(() => {
+    let result = JSON.parse(window.localStorage.getItem('repos'));
+    if (result === null) {
+      return;
+    }
+    setSelectedRepo(result);
+  }, []);
+
+  useEffect(() => {
     queueMicrotask(async () => {
       if (keyword === '') return;
       let result = await getData(keyword, page);
       let data = result.data.items;
       setRepository(data);
     });
-  }, [page]);
+  }, [page, keyword, setRepository]);
 
   return (
     <SearchComponent>
