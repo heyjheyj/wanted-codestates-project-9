@@ -3,22 +3,30 @@ import styled from 'styled-components';
 import { Octokit } from '@octokit/core';
 import ItemCard from '../components/ItemCard';
 import { useNavigate } from 'react-router-dom';
-import PageComponent from '../components/Pagenation';
+import PageComponent from '../components/Pagination';
 
 const octokit = new Octokit({ auth: `${process.env.REACT_APP_GITHUB_TOKEN}` });
 
 const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
   const [keyword, setKeyword] = useState('');
   const [selectedRepo, setSelectedRepo] = useState([]);
-
   const [page, setPage] = useState(1);
-
   const inputRef = useRef();
-
   const navigate = useNavigate();
 
   const onChagneText = (e) => {
     setKeyword(e.target.value);
+  };
+
+  const getData = async (keyword, page) => {
+    console.log('ssss');
+    let result = await octokit.request(
+      `GET /search/repositories?page=${page}`,
+      {
+        q: keyword,
+      },
+    );
+    return result;
   };
 
   const onSearch = async (e) => {
@@ -27,9 +35,7 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
       return;
     }
     try {
-      let result = await octokit.request('GET /search/repositories', {
-        q: keyword,
-      });
+      let result = await getData(keyword, page);
       let data = result.data.items;
       setRepository(data);
       console.log(data);
@@ -53,10 +59,6 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
           },
         ]);
       }
-      // let result = selectedRepo.filter((select) => select.id !== repo.id);
-      // console.log(result);
-      // result.length === selectedRepo.length &&
-      // setSelectedRepo([...selectedRepo, repo]);
     } else if (selectedRepo.length > 3) {
       alert('최대 4개의 Repository만 저장할 수 있습니다.');
     }
@@ -73,6 +75,15 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
         user.id === repo.id && navigate(`/issue/${user.user}/${user.repo}`),
     );
   };
+
+  useEffect(() => {
+    queueMicrotask(async () => {
+      if (keyword === '') return;
+      let result = await getData(keyword, page);
+      let data = result.data.items;
+      setRepository(data);
+    });
+  }, [page]);
 
   return (
     <SearchComponent>
@@ -98,7 +109,13 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
               ))}
           </RepositoryList>
           <Pagenation>
-            <PageComponent page={page} setPage={setPage} />
+            {repository.length > 0 && (
+              <PageComponent
+                page={page}
+                setPage={setPage}
+                repository={repository}
+              />
+            )}
           </Pagenation>
         </ResultRepository>
         {selectedRepo.length > 0 && (

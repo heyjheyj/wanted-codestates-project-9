@@ -1,7 +1,25 @@
 import styled from 'styled-components';
+import { useEffect, useState } from 'react';
 
-function PageComponent({ page, setPage }) {
-  // const numPages = Math.ceil(total / limit);
+function PageComponent({ page, setPage, repository }) {
+  const [start, setStart] = useState(page);
+  const [last, setLast] = useState();
+
+  useEffect(() => {
+    if (page === 0) {
+      return;
+    } else if (page < start) {
+      setStart(start - 1);
+    } else if (page > start + 9) {
+      setStart(start + 1);
+    }
+  }, [page]);
+
+  useEffect(() => {
+    if (repository && repository.length < 30) {
+      setLast(page);
+    }
+  }, [repository]);
 
   return (
     <>
@@ -14,13 +32,13 @@ function PageComponent({ page, setPage }) {
           .map((_, i) => (
             <Button
               key={i + 1}
-              onClick={() => setPage(i + 1)}
-              aria-current={page === i + 1 ? 'page' : null}
+              onClick={() => setPage(start + i)}
+              aria-current={page === i + start ? 'page' : null}
             >
-              {i + 1}
+              {i + start}
             </Button>
           ))}
-        <Button onClick={() => setPage(page + 1)} disabled={page === 10}>
+        <Button onClick={() => setPage(page + 1)} disabled={page === last}>
           &gt;
         </Button>
       </Nav>

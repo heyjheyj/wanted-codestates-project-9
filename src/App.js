@@ -8,8 +8,6 @@ function App() {
   const [repository, setRepository] = useState([]);
   const [userInfo, setUserInfo] = useState([]);
 
-  console.log(userInfo);
-
   return (
     <AppComponent>
       <Routes>
@@ -41,4 +39,8 @@ const AppComponent = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
 `;
