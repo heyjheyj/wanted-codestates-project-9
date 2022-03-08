@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { Octokit } from '@octokit/core';
 import ItemCard from '../components/ItemCard';
@@ -18,7 +18,7 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
     setKeyword(e.target.value);
   };
 
-  const getData = async (keyword, page) => {
+  const getData = useCallback(async (keyword, page) => {
     console.log('ssss');
     let result = await octokit.request(
       `GET /search/repositories?page=${page}`,
@@ -27,7 +27,7 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
       },
     );
     return result;
-  };
+  }, []);
 
   const onSearch = async (e) => {
     e.preventDefault();
@@ -95,7 +95,7 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
       let data = result.data.items;
       setRepository(data);
     });
-  }, [page, keyword, setRepository]);
+  }, [page, keyword, setRepository, getData]);
 
   return (
     <SearchComponent>
