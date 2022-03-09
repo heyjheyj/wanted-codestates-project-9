@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Octokit } from '@octokit/core';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import IssueCard from '../components/IssueCard';
 import styled from 'styled-components';
 
@@ -9,29 +9,37 @@ const octokit = new Octokit({ auth: `${process.env.REACT_APP_GITHUB_TOKEN}` });
 const Issue = (props) => {
   const { user, repo } = useParams();
   const [issues, setIssues] = useState([]);
+  const navigate = useNavigate();
 
   const searchIssues = useCallback(
     async (page) => {
       let res = await octokit.request(
-        `GET /repos/${user}/${repo}/issues?page=${page}`,
+        `GET /repos/${user}/${repo}/issues?page=${page}&per_page=100`,
       );
-      setIssues(res.data);
+      return res;
     },
     [repo, user],
   );
 
+  const goToMain = () => {
+    navigate('/');
+  };
+
   useEffect(() => {
-    if (user && repo) {
-      let page = 1;
-      let res = searchIssues(page);
-      console.log(res);
-    } else {
-      return;
-    }
+    queueMicrotask(async () => {
+      if (user && repo) {
+        let page = 1;
+        let res = await searchIssues(page);
+        setIssues(res.data);
+      } else {
+        return;
+      }
+    });
   }, [user, repo, searchIssues]);
 
   return (
     <IssueComponent>
+      <MainButton onClick={goToMain}>Main</MainButton>
       <UserInfo>
         {issues.length > 0 ? (
           <Avatar src={`${issues[0].user.avatar_url}`} alt="photo" />
@@ -62,6 +70,24 @@ const UserInfo = styled.section`
   align-items: center;
 `;
 
+const MainButton = styled.button`
+  border: none;
+  background: #f0f0f0;
+  width: 60px;
+  height: 40px;
+  font-size: 20px;
+  color: gray;
+  border-radius: 10px;
+  position: absolute;
+  top: 10px;
+  left: 20px;
+  &:hover {
+    background: #00a0ff50;
+    color: black;
+    cursor: pointer;
+  }
+`;
+
 const RepoInfo = styled.h2`
   text-align: center;
   margin-left: 10px;
@@ -82,6 +108,7 @@ const IssueComponent = styled.div`
   justify-content: center;
   align-items: center;
   max-width: 800px;
+  position: relative;
 `;
 
 const IssueContainer = styled.ul`

@@ -3,7 +3,11 @@ import styled from 'styled-components';
 
 const ItemCard = (props) => {
   const selectRepo = () => {
-    props.onSelectRepo(props.repo);
+    if (props.repo.open_issues < 1) {
+      return;
+    } else {
+      props.onSelectRepo(props.repo);
+    }
   };
 
   const deleteRepo = (e) => {
@@ -14,12 +18,16 @@ const ItemCard = (props) => {
   return (
     <>
       {props.onSelectRepo ? (
-        <Item onClick={selectRepo}>
+        <Item
+          onClick={selectRepo}
+          able={props.repo.open_issues > 0 ? 'able' : 'unable'}
+        >
           <User>
             <UserProfile
               src={`http://github.com/${props.repo.owner.login}.png`}
             />
             <UserName>{props.repo.owner.login}</UserName>
+            {props.repo.open_issues > 0 ? '' : <NoIssues>No Issues</NoIssues>}
           </User>
           <Repository>{props.repo.name}</Repository>
           {props.repo.language && (
@@ -55,11 +63,12 @@ const Item = styled.li`
   width: 45%;
   border: 1px solid #ddd;
   border-radius: 10px;
-  background-color: white;
+  background-color: ${(props) => (props.able === 'able' ? 'white' : '#f0f0f0')};
   overflow: hidden;
   &:hover {
-    background-color: #f0f0f0;
-    cursor: pointer;
+    background-color: ${(props) =>
+      props.able === 'able' ? '#00a0ff10' : '#f0f0f0'};
+    cursor: ${(props) => props.able === 'able' && 'pointer'};
   }
 `;
 
@@ -69,6 +78,7 @@ const User = styled.div`
   align-items: flex-end;
   padding-bottom: 5px;
   border-bottom: 1px solid #ddd;
+  position: relative;
 `;
 
 const UserProfile = styled.img`
@@ -83,6 +93,13 @@ const UserName = styled.span`
   font-size: 16px;
   margin-left: 6px;
   color: gray;
+`;
+
+const NoIssues = styled.span`
+  font-size: 16px;
+  color: #00a0ff;
+  position: absolute;
+  right: 10px;
 `;
 
 const Repository = styled.span`

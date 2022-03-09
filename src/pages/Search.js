@@ -14,12 +14,7 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
   const inputRef = useRef();
   const navigate = useNavigate();
 
-  const onChagneText = (e) => {
-    setKeyword(e.target.value);
-  };
-
   const getData = useCallback(async (keyword, page) => {
-    console.log('ssss');
     let result = await octokit.request(
       `GET /search/repositories?page=${page}`,
       {
@@ -31,6 +26,9 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
 
   const onSearch = async (e) => {
     e.preventDefault();
+    let keyword = inputRef.current.value;
+    setKeyword(keyword);
+
     if (keyword === '') {
       return;
     }
@@ -38,11 +36,9 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
       let result = await getData(keyword, page);
       let data = result.data.items;
       setRepository(data);
-      console.log(data);
     } catch (err) {
       console.log(err);
     }
-    inputRef.current.value = '';
   };
 
   const onSelectRepo = (repo) => {
@@ -71,13 +67,24 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
   const onDeleteRepo = (repo) => {
     let result = selectedRepo.filter((selected) => selected.id !== repo.id);
     setSelectedRepo(result);
+    window.localStorage.setItem('repos', JSON.stringify(result));
   };
 
   const moveToSelectedRepo = (repo) => {
+    console.log(repo);
     userInfo.map(
       (user) =>
         user.id === repo.id && navigate(`/issue/${user.user}/${user.repo}`),
     );
+    if (keyword === '') {
+      const result = repo.full_name.split('/');
+      navigate(`/issue/${result[0]}/${result[1]}`);
+    }
+  };
+
+  const moveToMain = () => {
+    setSelectedRepo([]);
+    window.location.reload();
   };
 
   useEffect(() => {
@@ -100,15 +107,9 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
   return (
     <SearchComponent>
       <Header>
-        <Title>Github Repository Search</Title>
+        <Title onClick={moveToMain}>Github Repository Search</Title>
         <SearchForm onSubmit={onSearch}>
-          <SearchInput
-            ref={inputRef}
-            type="text"
-            value={keyword}
-            onChange={onChagneText}
-            autoFocus
-          />
+          <SearchInput ref={inputRef} type="text" autoFocus />
           <SearchButton type="submit" value="검색" onClick={onSearch} />
         </SearchForm>
       </Header>
@@ -154,7 +155,8 @@ const SearchComponent = styled.div`
   width: 90%;
   height: 90%;
   padding: 20px;
-  max-width: 800px;
+  max-width: 1000px;
+  min-width: 800px;
 `;
 
 const Header = styled.header`
@@ -167,6 +169,7 @@ const Header = styled.header`
 const Title = styled.h2`
   margin: 0;
   padding: 0;
+  cursor: pointer;
 `;
 
 const SearchForm = styled.form`
@@ -206,7 +209,7 @@ const SearchButton = styled.input`
 
 const ResultRepository = styled.div`
   margin: auto;
-  width: ${(props) => (props.selectedRepo.length > 0 ? '60%' : '93%')};
+  width: ${(props) => (props.selectedRepo.length > 0 ? '70%' : '93%')};
   height: 100%;
   margin: 20px;
   overflow: scroll;
@@ -224,7 +227,7 @@ const RepositoryList = styled.ul`
 `;
 
 const SaveRepo = styled.div`
-  width: 40%;
+  width: 30%;
   height: 100%;
   background-color: #ddd;
 `;
