@@ -4,6 +4,7 @@ import { Octokit } from '@octokit/core';
 import ItemCard from '../components/ItemCard';
 import { useNavigate } from 'react-router-dom';
 import PageComponent from '../components/Pagination';
+import Skeleton from '../components/Skeleton';
 
 const octokit = new Octokit({ auth: `${process.env.REACT_APP_GITHUB_TOKEN}` });
 
@@ -13,8 +14,19 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
   const [page, setPage] = useState(1);
   const inputRef = useRef();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const emptyData = () => {
+    let result = [];
+    for (let i = 0; i < 30; i++) {
+      let empty = '';
+      result.push(empty);
+    }
+    return result;
+  };
+  const loadingData = emptyData();
 
   const getData = useCallback(async (keyword, page) => {
+    setIsLoading(true);
     let result = await octokit.request(
       `GET /search/repositories?page=${page}`,
       {
@@ -36,6 +48,7 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
       let result = await getData(keyword, page);
       let data = result.data.items;
       setRepository(data);
+      setIsLoading(false);
     } catch (err) {
       console.log(err);
     }
@@ -101,6 +114,7 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
       let result = await getData(keyword, page);
       let data = result.data.items;
       setRepository(data);
+      setIsLoading(false);
     });
   }, [page, keyword, setRepository, getData]);
 
@@ -115,21 +129,35 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
       </Header>
       <SearchResult>
         <ResultRepository selectedRepo={selectedRepo}>
-          <RepositoryList>
-            {repository?.length > 0 &&
-              repository.map((repo, index) => (
-                <ItemCard key={index} repo={repo} onSelectRepo={onSelectRepo} />
+          {isLoading ? (
+            <RepositoryList>
+              {loadingData.map((v, i) => (
+                <Skeleton key={i} />
               ))}
-          </RepositoryList>
-          <Pagenation>
-            {repository.length > 0 && (
-              <PageComponent
-                page={page}
-                setPage={setPage}
-                repository={repository}
-              />
-            )}
-          </Pagenation>
+            </RepositoryList>
+          ) : (
+            <>
+              <RepositoryList>
+                {repository?.length > 0 &&
+                  repository.map((repo, index) => (
+                    <ItemCard
+                      key={index}
+                      repo={repo}
+                      onSelectRepo={onSelectRepo}
+                    />
+                  ))}
+              </RepositoryList>
+              <Pagenation>
+                {repository.length > 0 && (
+                  <PageComponent
+                    page={page}
+                    setPage={setPage}
+                    repository={repository}
+                  />
+                )}
+              </Pagenation>
+            </>
+          )}
         </ResultRepository>
         {selectedRepo.length > 0 && (
           <SaveRepo>
@@ -223,7 +251,7 @@ const RepositoryList = styled.ul`
   display: flex;
   flex-wrap: wrap;
   padding-bottom: 30px;
-  justify-content: space-between;
+  justify-content: space-around;
 `;
 
 const SaveRepo = styled.div`
