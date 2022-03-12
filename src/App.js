@@ -24,7 +24,7 @@ function App() {
         />
         <Route
           path="/issue/:user/:repo"
-          element={<Issue userInfo={userInfo} />}
+          element={<Issue userInfo={userInfo} setRepository={setRepository} />}
         />
       </Routes>
     </AppComponent>
