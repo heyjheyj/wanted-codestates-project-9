@@ -1,8 +1,9 @@
 import Search from './pages/Search';
-import styled from 'styled-components';
+import styled, { ThemeProvider } from 'styled-components';
 import Issue from './pages/Issue';
 import { Route, Routes } from 'react-router-dom';
 import { useState } from 'react';
+import theme from './styles/theme';
 
 function App() {
   const [repository, setRepository] = useState([]);
@@ -10,23 +11,27 @@ function App() {
 
   return (
     <AppComponent>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <Search
-              repository={repository}
-              setRepository={setRepository}
-              setUserInfo={setUserInfo}
-              userInfo={userInfo}
-            />
-          }
-        />
-        <Route
-          path="/issue/:user/:repo"
-          element={<Issue userInfo={userInfo} setRepository={setRepository} />}
-        />
-      </Routes>
+      <ThemeProvider theme={theme}>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Search
+                repository={repository}
+                setRepository={setRepository}
+                setUserInfo={setUserInfo}
+                userInfo={userInfo}
+              />
+            }
+          />
+          <Route
+            path="/issue/:user/:repo"
+            element={
+              <Issue userInfo={userInfo} setRepository={setRepository} />
+            }
+          />
+        </Routes>
+      </ThemeProvider>
     </AppComponent>
   );
 }

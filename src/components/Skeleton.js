@@ -25,4 +25,9 @@ const Item = styled.li`
   border-radius: 10px;
   background-color: #f1f1f1;
   animation: ${shine} 1s infinite;
+  @media ${({ theme }) => theme.device.base} {
+    width: 90%;
+    margin: auto;
+    margin-top: 5px;
+  }
 `;

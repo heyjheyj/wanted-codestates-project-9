@@ -1,5 +1,11 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import styled from 'styled-components';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useContext,
+} from 'react';
+import styled, { ThemeContext } from 'styled-components';
 import { Octokit } from '@octokit/core';
 import ItemCard from '../components/ItemCard';
 import { useNavigate } from 'react-router-dom';
@@ -9,12 +15,17 @@ import Skeleton from '../components/Skeleton';
 const octokit = new Octokit({ auth: `${process.env.REACT_APP_GITHUB_TOKEN}` });
 
 const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
+  const theme = useContext(ThemeContext);
+  console.log(theme);
+
   const [keyword, setKeyword] = useState('');
   const [selectedRepo, setSelectedRepo] = useState([]);
   const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+
   const inputRef = useRef();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+
   const emptyData = () => {
     let result = [];
     for (let i = 0; i < 30; i++) {
@@ -84,7 +95,6 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
   };
 
   const moveToSelectedRepo = (repo) => {
-    console.log(repo);
     userInfo.map(
       (user) =>
         user.id === repo.id && navigate(`/issue/${user.user}/${user.repo}`),
@@ -180,11 +190,12 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
 export default Search;
 
 const SearchComponent = styled.div`
+  margin: auto;
   width: 90%;
   height: 90%;
   padding: 20px;
-  max-width: 1000px;
-  min-width: 800px;
+  max-width: 1024px;
+  min-width: 600px;
 `;
 
 const Header = styled.header`
@@ -194,10 +205,19 @@ const Header = styled.header`
   align-items: center;
 `;
 
-const Title = styled.h2`
+const Title = styled.span`
   margin: 0;
+  height: 100%;
   padding: 0;
   cursor: pointer;
+  font-size: ${({ theme }) => theme.fontSize.lg};
+  font-weight: 600;
+  @media ${({ theme }) => theme.device.base} {
+    font-size: ${({ theme }) => theme.fontSize.md};
+  }
+  @media ${({ theme }) => theme.device.small} {
+    font-size: ${({ theme }) => theme.fontSize.base};
+  }
 `;
 
 const SearchForm = styled.form`
@@ -213,9 +233,17 @@ const SearchInput = styled.input`
   height: 100%;
   border: none;
   border-bottom: 1px solid #ddd;
-  font-size: 18px;
+  font-size: ${({ theme }) => theme.fontSize.md};
   &:focus {
     outline: none;
+  }
+  @media ${({ theme }) => theme.device.base} {
+    margin-left: 10px;
+    font-size: ${({ theme }) => theme.fontSize.base};
+  }
+  @media ${({ theme }) => theme.device.small} {
+    font-size: ${({ theme }) => theme.fontSize.sm};
+    margin-left: 10px;
   }
 `;
 
@@ -224,19 +252,26 @@ const SearchButton = styled.input`
   margin-left: 5px;
   border: none;
   border-radius: 3px;
-  font-size: 16px;
-  color: gray;
+  font-size: ${({ theme }) => theme.fontSize.md};
+  color: ${({ theme }) => theme.lightversion.fontSecondary};
   cursor: pointer;
   transition: transform 200ms ease-in;
   &:hover {
     transform: scale(1.05);
-    background-color: #00a0ff50;
-    color: black;
+    background-color: ${({ theme }) => theme.lightversion.hover};
+    color: ${({ theme }) => theme.lightversion.fontPrimary};
+  }
+  @media ${({ theme }) => theme.device.base} {
+    margin-left: 10px;
+    font-size: ${({ theme }) => theme.fontSize.base};
+  }
+  @media ${({ theme }) => theme.device.small} {
+    font-size: ${({ theme }) => theme.fontSize.sm};
+    margin-left: 10px;
   }
 `;
 
 const ResultRepository = styled.div`
-  margin: auto;
   width: ${(props) => (props.selectedRepo.length > 0 ? '70%' : '93%')};
   height: 100%;
   margin: 20px;
@@ -244,34 +279,48 @@ const ResultRepository = styled.div`
 `;
 
 const RepositoryList = styled.ul`
-  margin: auto;
+  margin: 0;
   padding: 0;
   height: auto;
-  width: 97%;
   display: flex;
   flex-wrap: wrap;
   padding-bottom: 30px;
   justify-content: space-around;
+  @media ${({ theme }) => theme.device.base} {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
 `;
 
 const SaveRepo = styled.div`
   width: 30%;
   height: 100%;
-  background-color: #ddd;
+  background-color: ${({ theme }) => theme.lightversion.secondary};
+  min-width: 220px;
 `;
 
-const SaveRepoTitle = styled.h3`
-  margin: 0;
-  padding: 0;
-  margin: 20px 0 10px 20px;
+const SaveRepoTitle = styled.span`
+  display: block;
+  padding: 20px 0 10px 20px;
+  font-size: ${({ theme }) => theme.fontSize.md};
+  font-weight: 600;
+  @media ${({ theme }) => theme.device.base} {
+    font-size: ${({ theme }) => theme.fontSize.base};
+    padding: 20px 0 10px 10px;
+  }
+  @media ${({ theme }) => theme.device.small} {
+    font-size: ${({ theme }) => theme.fontSize.sm};
+  }
 `;
 
 const SearchResult = styled.div`
   width: 100%;
   height: 100%;
-  border: 1px solid gray;
+  border: 1px solid ${({ theme }) => theme.lightversion.secondary};
   margin-top: 20px;
   display: flex;
+  justify-content: center;
   flex-direction: row;
   overflow: hidden;
 `;

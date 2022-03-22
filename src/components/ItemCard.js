@@ -70,6 +70,11 @@ const Item = styled.li`
       props.able === 'able' ? '#00a0ff10' : '#f0f0f0'};
     cursor: ${(props) => props.able === 'able' && 'pointer'};
   }
+  @media ${({ theme }) => theme.device.base} {
+    width: 90%;
+    margin: auto;
+    margin-top: 5px;
+  }
 `;
 
 const User = styled.div`
@@ -100,6 +105,9 @@ const NoIssues = styled.span`
   color: #00a0ff;
   position: absolute;
   right: 10px;
+  @media ${({ theme }) => theme.device.large} {
+    opacity: 0;
+  }
 `;
 
 const Repository = styled.span`

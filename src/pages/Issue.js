@@ -16,6 +16,7 @@ const Issue = (props) => {
       let res = await octokit.request(
         `GET /repos/${user}/${repo}/issues?page=${page}&per_page=100`,
       );
+      console.log('api 호출:', res);
       return res;
     },
     [repo, user],
@@ -73,25 +74,43 @@ const UserInfo = styled.section`
 
 const MainButton = styled.button`
   border: none;
-  background: #f0f0f0;
+  background: ${({ theme }) => theme.lightversion.secondary};
   width: 60px;
   height: 40px;
-  font-size: 20px;
-  color: gray;
+  font-size: ${({ theme }) => theme.fontSize.md};
+  color: ${({ theme }) => theme.lightversion.fontSecondary};
   border-radius: 10px;
   position: absolute;
   top: 10px;
   left: 20px;
   &:hover {
-    background: #00a0ff50;
-    color: black;
+    background: ${({ theme }) => theme.lightversion.hover};
+    color: ${({ theme }) => theme.lightversion.fontPrimary};
     cursor: pointer;
+  }
+  @media ${({ theme }) => theme.device.base} {
+    font-size: ${({ theme }) => theme.fontSize.base};
+    width: 50px;
+    left: 15px;
+  }
+  @media ${({ theme }) => theme.device.small} {
+    font-size: ${({ theme }) => theme.fontSize.sm};
+    width: 40px;
+    left: 10px;
   }
 `;
 
-const RepoInfo = styled.h2`
+const RepoInfo = styled.span`
   text-align: center;
   margin-left: 10px;
+  font-size: ${({ theme }) => theme.fontSize.lg};
+  font-weight: 600;
+  @media ${({ theme }) => theme.device.base} {
+    font-size: ${({ theme }) => theme.fontSize.md};
+  }
+  @media ${({ theme }) => theme.device.small} {
+    font-size: ${({ theme }) => theme.fontSize.base};
+  }
 `;
 
 const Avatar = styled.img`
@@ -110,6 +129,7 @@ const IssueComponent = styled.div`
   align-items: center;
   max-width: 800px;
   position: relative;
+  min-width: 600px;
 `;
 
 const IssueContainer = styled.ul`

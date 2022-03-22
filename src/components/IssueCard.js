@@ -34,7 +34,6 @@ const Card = styled.li`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 45px;
   border: 1px solid #ddd;
   border-radius: 10px;
   &:hover {
@@ -43,15 +42,27 @@ const Card = styled.li`
   }
 `;
 
-const IssueTitle = styled.h3`
-  margin: 0;
-  padding: 0;
+const IssueTitle = styled.span`
   margin: 0 15px;
+  font-size: ${({ theme }) => theme.fontSize.md};
+  font-weight: 600;
+  @media ${({ theme }) => theme.device.base} {
+    font-size: ${({ theme }) => theme.fontSize.base};
+  }
+  @media ${({ theme }) => theme.device.small} {
+    font-size: ${({ theme }) => theme.fontSize.sm};
+  }
 `;
 
 const IssueContent = styled.span`
-  font-size: 14px;
+  font-size: ${({ theme }) => theme.fontSize.base};
   margin-left: 15px;
+  @media ${({ theme }) => theme.device.base} {
+    font-size: ${({ theme }) => theme.fontSize.sm};
+  }
+  @media ${({ theme }) => theme.device.small} {
+    font-size: ${({ theme }) => theme.fontSize.xs};
+  }
 `;
 
 const State = styled.span`
