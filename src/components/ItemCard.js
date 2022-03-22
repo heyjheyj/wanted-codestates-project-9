@@ -63,8 +63,8 @@ const Item = styled.li`
   width: 45%;
   border: 1px solid #ddd;
   border-radius: 10px;
-  background-color: ${(props) => (props.able === 'able' ? 'white' : '#f0f0f0')};
   overflow: hidden;
+  background-color: ${(props) => (props.able === 'able' ? 'white' : '#f0f0f0')};
   &:hover {
     background-color: ${(props) =>
       props.able === 'able' ? '#00a0ff10' : '#f0f0f0'};
@@ -152,6 +152,7 @@ const SelectedItem = styled.li`
   margin-top: 5px;
   border: 1px solid #ddd;
   border-radius: 10px;
+  overflow: hidden;
   background-color: white;
   &:hover {
     background-color: #f0f0f0;
