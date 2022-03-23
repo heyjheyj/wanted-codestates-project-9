@@ -16,7 +16,6 @@ const Issue = (props) => {
       let res = await octokit.request(
         `GET /repos/${user}/${repo}/issues?page=${page}&per_page=100`,
       );
-      console.log('api 호출:', res);
       return res;
     },
     [repo, user],

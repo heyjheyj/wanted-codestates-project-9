@@ -1,27 +1,20 @@
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  useContext,
-} from 'react';
-import styled, { ThemeContext } from 'styled-components';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import styled from 'styled-components';
 import { Octokit } from '@octokit/core';
 import ItemCard from '../components/ItemCard';
 import { useNavigate } from 'react-router-dom';
 import PageComponent from '../components/Pagination';
 import Skeleton from '../components/Skeleton';
+import Notification from '../components/Notification';
 
 const octokit = new Octokit({ auth: `${process.env.REACT_APP_GITHUB_TOKEN}` });
 
 const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
-  const theme = useContext(ThemeContext);
-  console.log(theme);
-
   const [keyword, setKeyword] = useState('');
   const [selectedRepo, setSelectedRepo] = useState([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [notification, setNotification] = useState([]);
 
   const inputRef = useRef();
   const navigate = useNavigate();
@@ -53,6 +46,13 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
     setKeyword(keyword);
 
     if (keyword === '') {
+      let noti = {
+        id: Date.now(),
+        type: 'danger',
+        description: '검색어를 입력해주세요.',
+        dismissTime: 3000,
+      };
+      setNotification([...notification, noti]);
       return;
     }
     try {
@@ -82,9 +82,22 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
             repo: repoName,
           },
         ]);
+        let noti = {
+          id: Date.now(),
+          type: 'success',
+          description: 'Repository를 저장했습니다.',
+          dismissTime: 3000,
+        };
+        setNotification([...notification, noti]);
       }
     } else if (selectedRepo.length > 3) {
-      alert('최대 4개의 Repository만 저장할 수 있습니다.');
+      let noti = {
+        id: Date.now(),
+        type: 'danger',
+        description: '최대 4개의 Repository만 저장할 수 있습니다.',
+        dismissTime: 3000,
+      };
+      setNotification([...notification, noti]);
     }
   };
 
@@ -92,6 +105,13 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
     let result = selectedRepo.filter((selected) => selected.id !== repo.id);
     setSelectedRepo(result);
     window.localStorage.setItem('repos', JSON.stringify(result));
+    let noti = {
+      id: Date.now(),
+      type: 'success',
+      description: 'Repository를 삭제했습니다.',
+      dismissTime: 3000,
+    };
+    setNotification([...notification, noti]);
   };
 
   const moveToSelectedRepo = (repo) => {
@@ -183,6 +203,10 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
           </SaveRepo>
         )}
       </SearchResult>
+      <Notification
+        notification={notification}
+        setNotification={setNotification}
+      />
     </SearchComponent>
   );
 };
