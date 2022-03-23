@@ -1,16 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Toast from './Toast';
 import styled from 'styled-components';
 
 const Notification = ({ notification, setNotification }) => {
-  console.log('noti', notification);
   const [toastList, setToastList] = useState();
 
-  const onDelete = (dismissed) => {
-    console.log(dismissed);
-    let result = toastList.filter((item) => item.id !== dismissed.id);
-    setNotification(result);
-  };
+  const spliceArray = useCallback(() => {
+    setTimeout(() => {
+      toastList.splice(0, 4);
+      setNotification(toastList);
+    }, 100);
+  }, [toastList, setNotification]);
+
+  useEffect(() => {
+    if (toastList?.length > 5) {
+      spliceArray();
+    }
+    return () => {
+      clearTimeout(spliceArray);
+    };
+  }, [toastList, setNotification, spliceArray]);
 
   useEffect(() => {
     setToastList([...notification]);
@@ -19,7 +28,7 @@ const Notification = ({ notification, setNotification }) => {
   return (
     <Notifications>
       {toastList?.map((item, index) => (
-        <Toast key={index} item={item} onDelete={onDelete} />
+        <Toast key={index} item={item} />
       ))}
     </Notifications>
   );
@@ -30,6 +39,6 @@ export default Notification;
 const Notifications = styled.div`
   position: fixed;
   box-sizing: border-box;
-  top: 0;
+  bottom: 80px;
   right: 40px;
 `;

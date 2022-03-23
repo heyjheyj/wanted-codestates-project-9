@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 
-const Toast = ({ item, onDelete }) => {
+const Toast = ({ item }) => {
   const [isFading, setIsFading] = useState(false);
 
   useEffect(() => {
@@ -12,15 +12,6 @@ const Toast = ({ item, onDelete }) => {
       clearInterval(interval);
     };
   }, [item.dismissTime]);
-
-  // useEffect(() => {
-  //   if (item.id + 5000 < Date.now()) {
-  //     console.log(item.id);
-  //     console.log(Date.now());
-  //     console.log(item);
-  //     onDelete(item);
-  //   }
-  // }, [item.id]);
 
   return (
     <ToastMessage type={`${item.type}`} isFading={isFading}>
@@ -40,18 +31,9 @@ const show = keyframes`
   }
 `;
 
-// const fade = keyframes`
-//   from {
-//     transform: translateX(0px);
-//   } to {
-//     transform: translateX(100%);
-//     opacity: 0;
-//   }
-// `;
-
 const ToastMessage = styled.div`
   margin-top: 8px;
-  top: 12px;
+  bottom: 12px;
   right: 12px;
   min-width: 200px;
   min-height: 30px;
@@ -74,6 +56,6 @@ const ToastMessage = styled.div`
     props.isFading &&
     css`
       display: none;
-      transform: display 4s ease-in-out;
+      transform: display 3s ease-in-out;
     `}
 `;

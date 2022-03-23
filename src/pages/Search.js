@@ -50,7 +50,7 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
         id: Date.now(),
         type: 'danger',
         description: '검색어를 입력해주세요.',
-        dismissTime: 3000,
+        dismissTime: 4000,
       };
       setNotification([...notification, noti]);
       return;
@@ -86,7 +86,7 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
           id: Date.now(),
           type: 'success',
           description: 'Repository를 저장했습니다.',
-          dismissTime: 3000,
+          dismissTime: 4000,
         };
         setNotification([...notification, noti]);
       }
@@ -95,7 +95,7 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
         id: Date.now(),
         type: 'danger',
         description: '최대 4개의 Repository만 저장할 수 있습니다.',
-        dismissTime: 3000,
+        dismissTime: 4000,
       };
       setNotification([...notification, noti]);
     }
@@ -107,9 +107,9 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
     window.localStorage.setItem('repos', JSON.stringify(result));
     let noti = {
       id: Date.now(),
-      type: 'success',
+      type: 'danger',
       description: 'Repository를 삭제했습니다.',
-      dismissTime: 3000,
+      dismissTime: 4000,
     };
     setNotification([...notification, noti]);
   };
