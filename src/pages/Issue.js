@@ -1,25 +1,24 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { Octokit } from '@octokit/core';
+import React, { useEffect, useState } from 'react';
+
 import { useNavigate, useParams } from 'react-router-dom';
 import IssueCard from '../components/IssueCard';
 import styled from 'styled-components';
+import { Octokit } from '@octokit/core';
 
 const octokit = new Octokit({ auth: `${process.env.REACT_APP_GITHUB_TOKEN}` });
 
 const Issue = (props) => {
   const { user, repo } = useParams();
-  const [issues, setIssues] = useState([]);
   const navigate = useNavigate();
+  const [issues, setIssues] = useState();
 
-  const searchIssues = useCallback(
-    async (page) => {
-      let res = await octokit.request(
-        `GET /repos/${user}/${repo}/issues?page=${page}&per_page=100`,
-      );
-      return res;
-    },
-    [repo, user],
-  );
+  const getIssues = async (user, repo, page) => {
+    let res = await octokit.request(
+      `GET /repos/${user}/${repo}/issues?page=${page}&per_page=100`,
+    );
+    let data = res.data;
+    return data;
+  };
 
   const goToMain = () => {
     props.setRepository([]);
@@ -30,19 +29,19 @@ const Issue = (props) => {
     queueMicrotask(async () => {
       if (user && repo) {
         let page = 1;
-        let res = await searchIssues(page);
-        setIssues(res.data);
+        let result = await getIssues(user, repo, page);
+        setIssues(result);
       } else {
         return;
       }
     });
-  }, [user, repo, searchIssues]);
+  }, [user, repo]);
 
   return (
     <IssueComponent>
       <MainButton onClick={goToMain}>Main</MainButton>
       <UserInfo>
-        {issues.length > 0 ? (
+        {issues?.length > 0 ? (
           <Avatar src={`${issues[0].user.avatar_url}`} alt="photo" />
         ) : (
           ''

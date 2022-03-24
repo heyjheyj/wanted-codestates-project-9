@@ -1,20 +1,31 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
-import { Octokit } from '@octokit/core';
 import ItemCard from '../components/ItemCard';
 import { useNavigate } from 'react-router-dom';
 import PageComponent from '../components/Pagination';
 import Skeleton from '../components/Skeleton';
 import Notification from '../components/Notification';
 
-const octokit = new Octokit({ auth: `${process.env.REACT_APP_GITHUB_TOKEN}` });
+import { useDispatch, useSelector } from 'react-redux';
+import { getData } from '../redux/repoReducer';
+import { addNoti } from '../redux/notiReducer';
+import {
+  saveRepo,
+  getRepo,
+  deleteRepo,
+  saveUserInfo,
+} from '../redux/issueReducer';
 
-const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
+const Search = () => {
+  const dispatch = useDispatch();
+  const repositories = useSelector((state) => state.repository.data);
+  const isLoading = useSelector((state) => state.repository.isLoading);
+  const notification = useSelector((state) => state.notifications.data);
+  const issueRepo = useSelector((state) => state.issueReducer.selectedRepo);
+  const userInfo = useSelector((state) => state.issueReducer.userInfo);
+
   const [keyword, setKeyword] = useState('');
-  const [selectedRepo, setSelectedRepo] = useState([]);
   const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [notification, setNotification] = useState([]);
 
   const inputRef = useRef();
   const navigate = useNavigate();
@@ -29,89 +40,61 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
   };
   const loadingData = emptyData();
 
-  const getData = useCallback(async (keyword, page) => {
-    setIsLoading(true);
-    let result = await octokit.request(
-      `GET /search/repositories?page=${page}`,
-      {
-        q: keyword,
-      },
-    );
-    return result;
-  }, []);
-
-  const onSearch = async (e) => {
+  const onSearch = (e) => {
     e.preventDefault();
     let keyword = inputRef.current.value;
     setKeyword(keyword);
 
     if (keyword === '') {
-      let noti = {
-        id: Date.now(),
-        type: 'danger',
-        description: '검색어를 입력해주세요.',
-        dismissTime: 4000,
-      };
-      setNotification([...notification, noti]);
+      dispatch(
+        addNoti({
+          type: 'danger',
+          description: '검색어를 입력해주세요.',
+          dismissTime: 4000,
+        }),
+      );
       return;
     }
     try {
-      let result = await getData(keyword, page);
-      let data = result.data.items;
-      setRepository(data);
-      setIsLoading(false);
+      dispatch(getData({ keyword, page }));
     } catch (err) {
       console.log(err);
     }
   };
 
   const onSelectRepo = (repo) => {
-    if (selectedRepo.length <= 3) {
-      if (selectedRepo.findIndex((item) => item.id === repo.id) === -1) {
-        setSelectedRepo([...selectedRepo, repo]);
-        window.localStorage.setItem(
-          'repos',
-          JSON.stringify([...selectedRepo, repo]),
+    if (issueRepo.length <= 3) {
+      if (issueRepo.findIndex((item) => item.id === repo.id) === -1) {
+        dispatch(saveRepo(repo));
+        dispatch(saveUserInfo(repo));
+        dispatch(
+          addNoti({
+            type: 'success',
+            description: 'Repository를 저장했습니다.',
+            dismissTime: 4000,
+          }),
         );
-        let [userName, repoName] = repo.full_name.split('/');
-        setUserInfo([
-          ...userInfo,
-          {
-            id: repo.id,
-            user: userName,
-            repo: repoName,
-          },
-        ]);
-        let noti = {
-          id: Date.now(),
-          type: 'success',
-          description: 'Repository를 저장했습니다.',
-          dismissTime: 4000,
-        };
-        setNotification([...notification, noti]);
       }
-    } else if (selectedRepo.length > 3) {
-      let noti = {
-        id: Date.now(),
-        type: 'danger',
-        description: '최대 4개의 Repository만 저장할 수 있습니다.',
-        dismissTime: 4000,
-      };
-      setNotification([...notification, noti]);
+    } else if (issueRepo.length > 3) {
+      dispatch(
+        addNoti({
+          type: 'danger',
+          description: '최대 4개의 Repository만 저장할 수 있습니다.',
+          dismissTime: 4000,
+        }),
+      );
     }
   };
 
   const onDeleteRepo = (repo) => {
-    let result = selectedRepo.filter((selected) => selected.id !== repo.id);
-    setSelectedRepo(result);
-    window.localStorage.setItem('repos', JSON.stringify(result));
-    let noti = {
-      id: Date.now(),
-      type: 'danger',
-      description: 'Repository를 삭제했습니다.',
-      dismissTime: 4000,
-    };
-    setNotification([...notification, noti]);
+    dispatch(deleteRepo(repo));
+    dispatch(
+      addNoti({
+        type: 'danger',
+        description: 'Repository를 삭제했습니다.',
+        dismissTime: 4000,
+      }),
+    );
   };
 
   const moveToSelectedRepo = (repo) => {
@@ -126,27 +109,19 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
   };
 
   const moveToMain = () => {
-    setSelectedRepo([]);
     window.location.reload();
   };
 
   useEffect(() => {
-    let result = JSON.parse(window.localStorage.getItem('repos'));
-    if (result === null) {
-      return;
+    if (!isLoading) {
+      dispatch(getRepo());
     }
-    setSelectedRepo(result);
-  }, []);
+  }, [dispatch, isLoading]);
 
   useEffect(() => {
-    queueMicrotask(async () => {
-      if (keyword === '') return;
-      let result = await getData(keyword, page);
-      let data = result.data.items;
-      setRepository(data);
-      setIsLoading(false);
-    });
-  }, [page, keyword, setRepository, getData]);
+    if (keyword === '') return;
+    dispatch(getData({ keyword, page }));
+  }, [page, keyword, dispatch]);
 
   return (
     <SearchComponent>
@@ -158,7 +133,7 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
         </SearchForm>
       </Header>
       <SearchResult>
-        <ResultRepository selectedRepo={selectedRepo}>
+        <ResultRepository selectedRepo={issueRepo}>
           {isLoading ? (
             <RepositoryList>
               {loadingData.map((v, i) => (
@@ -168,8 +143,8 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
           ) : (
             <>
               <RepositoryList>
-                {repository?.length > 0 &&
-                  repository.map((repo, index) => (
+                {repositories?.length > 0 &&
+                  repositories.map((repo, index) => (
                     <ItemCard
                       key={index}
                       repo={repo}
@@ -178,21 +153,21 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
                   ))}
               </RepositoryList>
               <Pagenation>
-                {repository.length > 0 && (
+                {repositories.length > 0 && (
                   <PageComponent
                     page={page}
                     setPage={setPage}
-                    repository={repository}
+                    repository={repositories}
                   />
                 )}
               </Pagenation>
             </>
           )}
         </ResultRepository>
-        {selectedRepo.length > 0 && (
+        {issueRepo.length > 0 && (
           <SaveRepo>
             <SaveRepoTitle>Saved Repository</SaveRepoTitle>
-            {selectedRepo?.map((repo, index) => (
+            {issueRepo?.map((repo, index) => (
               <ItemCard
                 key={index}
                 repo={repo}
@@ -203,10 +178,7 @@ const Search = ({ setRepository, setUserInfo, repository, userInfo }) => {
           </SaveRepo>
         )}
       </SearchResult>
-      <Notification
-        notification={notification}
-        setNotification={setNotification}
-      />
+      <Notification notification={notification} />
     </SearchComponent>
   );
 };
