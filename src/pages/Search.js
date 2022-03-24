@@ -14,18 +14,18 @@ import {
   getRepo,
   deleteRepo,
   saveUserInfo,
-} from '../redux/issueRepo';
+} from '../redux/issueReducer';
 
 const Search = () => {
   const dispatch = useDispatch();
   const repositories = useSelector((state) => state.repository.data);
+  const isLoading = useSelector((state) => state.repository.isLoading);
   const notification = useSelector((state) => state.notifications.data);
-  const issueRepo = useSelector((state) => state.issueRepo.selectedRepo);
-  const userInfo = useSelector((state) => state.issueRepo.userInfo);
+  const issueRepo = useSelector((state) => state.issueReducer.selectedRepo);
+  const userInfo = useSelector((state) => state.issueReducer.userInfo);
 
   const [keyword, setKeyword] = useState('');
   const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
 
   const inputRef = useRef();
   const navigate = useNavigate();
@@ -41,7 +41,6 @@ const Search = () => {
   const loadingData = emptyData();
 
   const onSearch = (e) => {
-    setIsLoading(true);
     e.preventDefault();
     let keyword = inputRef.current.value;
     setKeyword(keyword);
@@ -54,14 +53,10 @@ const Search = () => {
           dismissTime: 4000,
         }),
       );
-      setIsLoading(false);
       return;
     }
     try {
-      let result = dispatch(getData({ keyword, page }));
-      if (result.length > 0) {
-        setIsLoading(false);
-      }
+      dispatch(getData({ keyword, page }));
     } catch (err) {
       console.log(err);
     }
@@ -118,14 +113,14 @@ const Search = () => {
   };
 
   useEffect(() => {
-    dispatch(getRepo);
-  }, [dispatch]);
+    if (!isLoading) {
+      dispatch(getRepo());
+    }
+  }, [dispatch, isLoading]);
 
   useEffect(() => {
     if (keyword === '') return;
-    setIsLoading(true);
     dispatch(getData({ keyword, page }));
-    setIsLoading(false);
   }, [page, keyword, dispatch]);
 
   return (

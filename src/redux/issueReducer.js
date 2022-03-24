@@ -3,16 +3,24 @@ import { Octokit } from '@octokit/core';
 
 const octokit = new Octokit({ auth: `${process.env.REACT_APP_GITHUB_TOKEN}` });
 
-const initialState = { selectedRepo: [], userInfo: [] };
+const initialState = {
+  selectedRepo: [],
+  userInfo: [],
+  issues: [],
+  error: null,
+};
 
-export const getIssues = createAsyncThunk('userInfo', async (searchinfo) => {
-  const { user, repo, page } = searchinfo;
-  let res = await octokit.request(
-    `GET /repos/${user}/${repo}/issues?page=${page}&per_page=100`,
-  );
-  let data = res.data;
-  return data;
-});
+export const getIssues = createAsyncThunk(
+  'issueRepo/issues',
+  async (searchinfo) => {
+    const { user, repo, page } = searchinfo;
+    let res = await octokit.request(
+      `GET /repos/${user}/${repo}/issues?page=${page}&per_page=100`,
+    );
+    let data = res.data;
+    return data;
+  },
+);
 
 export const issueReducer = createSlice({
   name: 'issueRepo',
@@ -20,15 +28,14 @@ export const issueReducer = createSlice({
   reducers: {
     saveRepo: (state, actions) => {
       const repo = actions.payload;
-      state.selectedRepo.push(repo);
+      state.selectedRepo = [...state.selectedRepo, repo];
       window.localStorage.setItem(
         'repos',
-        JSON.stringify([...state.selectedRepo, repo]),
+        JSON.stringify([...state.selectedRepo]),
       );
     },
     getRepo: (state, actions) => {
       let result = JSON.parse(window.localStorage.getItem('repos'));
-      console.log(result);
       state.selectedRepo = [...result];
     },
     clearRepo: (state) => (state.selectedRepo = []),
@@ -51,20 +58,11 @@ export const issueReducer = createSlice({
       };
       state.userInfo = [...state.userInfo, data];
     },
-    extraReducers: {
-      [getIssues.pending]: (state) => {
-        state.loading = true;
-      },
-      [getIssues.fulfilled]: (state, action) => {
-        state.loading = false;
-        state.data = action.payload;
+    extraReducers: (builder) => {
+      builder.addCase(getIssues.fulfilled, (state, action) => {
+        state.issues = action.payload;
         state.error = '';
-      },
-      [getIssues.rejected]: (state, action) => {
-        state.loading = false;
-        state.data = [];
-        state.error = action.payload;
-      },
+      });
     },
   },
 });

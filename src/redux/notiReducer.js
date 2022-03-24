@@ -11,7 +11,6 @@ export const notiReducer = createSlice({
     },
     addNoti: (state, actions) => {
       const { type, description, dismissTime } = actions.payload;
-      console.log(type, description);
       let item = {
         id: Date.now(),
         type: type,

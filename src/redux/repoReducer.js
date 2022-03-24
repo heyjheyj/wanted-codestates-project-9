@@ -5,7 +5,7 @@ const octokit = new Octokit({ auth: `${process.env.REACT_APP_GITHUB_TOKEN}` });
 
 const initialState = {
   data: [],
-  loading: false,
+  isLoading: false,
   error: null,
 };
 
@@ -51,29 +51,24 @@ export const repoReducer = createSlice({
     clearData: (state) => {
       state.data = [];
     },
-    getLocalData: (state, action) => {
-      const { keyword } = action.payload;
-      const cache = JSON.parse(localStorage.getItem('searchResult'));
-      state.data = cache[keyword].result;
-    },
   },
   extraReducers: {
     [getData.pending]: (state) => {
-      state.loading = true;
+      state.isLoading = true;
     },
     [getData.fulfilled]: (state, action) => {
-      state.loading = false;
+      state.isLoading = false;
       state.data = action.payload;
       state.error = '';
     },
     [getData.rejected]: (state, action) => {
-      state.loading = false;
+      state.isLoading = false;
       state.data = [];
       state.error = action.payload;
     },
   },
 });
 
-export const { clearData, getLocalData } = repoReducer.actions;
+export const { clearData } = repoReducer.actions;
 
 export default repoReducer.reducer;
