@@ -1,48 +1,38 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { Octokit } from '@octokit/core';
+import React, { useEffect } from 'react';
+
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import IssueCard from '../components/IssueCard';
 import styled from 'styled-components';
-
-const octokit = new Octokit({ auth: `${process.env.REACT_APP_GITHUB_TOKEN}` });
+import { getIssues } from '../redux/issueRepo';
 
 const Issue = (props) => {
   const { user, repo } = useParams();
-  const [issues, setIssues] = useState([]);
   const navigate = useNavigate();
-
-  const searchIssues = useCallback(
-    async (page) => {
-      let res = await octokit.request(
-        `GET /repos/${user}/${repo}/issues?page=${page}&per_page=100`,
-      );
-      return res;
-    },
-    [repo, user],
-  );
+  const issues = useSelector((state) => state.issueRepo.userInfo);
+  const dispatch = useDispatch();
 
   const goToMain = () => {
     props.setRepository([]);
     navigate('/');
   };
 
+  // dispatch에 promise pending이 찍힘
+
   useEffect(() => {
-    queueMicrotask(async () => {
-      if (user && repo) {
-        let page = 1;
-        let res = await searchIssues(page);
-        setIssues(res.data);
-      } else {
-        return;
-      }
-    });
-  }, [user, repo, searchIssues]);
+    if (user && repo) {
+      let page = 1;
+      dispatch(getIssues({ user, repo, page }));
+    } else {
+      return;
+    }
+  }, [user, repo, dispatch]);
 
   return (
     <IssueComponent>
       <MainButton onClick={goToMain}>Main</MainButton>
       <UserInfo>
-        {issues.length > 0 ? (
+        {issues?.length > 0 ? (
           <Avatar src={`${issues[0].user.avatar_url}`} alt="photo" />
         ) : (
           ''
