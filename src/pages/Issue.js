@@ -7,6 +7,7 @@ import { Octokit } from '@octokit/core';
 import { useSelector, useDispatch } from 'react-redux';
 import { getSwitchState } from '../redux/toggleReducer';
 
+import { clearNoti } from '../redux/notiReducer';
 const octokit = new Octokit({ auth: `${process.env.REACT_APP_GITHUB_TOKEN}` });
 
 const Issue = (props) => {
@@ -43,6 +44,7 @@ const Issue = (props) => {
   }, [user, repo]);
 
   useEffect(() => {
+    dispatch(clearNoti());
     dispatch(getSwitchState());
   });
 
