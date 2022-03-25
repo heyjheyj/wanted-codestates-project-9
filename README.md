@@ -41,21 +41,26 @@ Github Repository 검색 및 저장하고, 저장된 Repository의 issue를 모�
 
 ![페이지네이션](https://user-images.githubusercontent.com/90097736/158009123-5022c1c8-d782-4ba0-a2e3-d0060ef42016.gif)
 
+### 4.Toast Message
+
+![toast](https://user-images.githubusercontent.com/90097736/160073039-19368cc3-6da0-4f05-b325-c84b9781fa5c.gif)
+
+
 ## :memo: 개발 log
 
-(3/21) 오늘부터 25일까지 개인과제를 진행한다.
+(3/21) 오늘부터 25일까지 개인과제를 진행합니다.
 <br/>과제는 1) 특정 검색어로 Github의 Repository를 검색할 수 있어야 하고, 
-<br/>2) 자주가는 repo를 저장(최대 4개)해 해당 repo의 issue를 한 번에 볼 수 있도록 구현해야 했다.
+<br/>2) 자주가는 repo를 저장(최대 4개)해 해당 repo의 issue를 한 번에 볼 수 있도록 구현해야 합니다.
 <br/>
-데이터가 많을 경우 로딩이 길어지는 경우가 있어 사용자 편의를 위해 skeleton ui를 적용해봤다.<br/>
-해당 내용은 블로깅을 했다. ([https://velog.io/@hyejeong/6.-skeleton-ui](https://velog.io/@hyejeong/6.-skeleton-ui))<br/>
+데이터가 많을 경우 로딩이 길어지는 경우가 있어 사용자 편의를 위해 skeleton ui를 적용해봤습니다.<br/>
+해당 내용은 블로깅을 했습니다. ([https://velog.io/@hyejeong/6.-skeleton-ui](https://velog.io/@hyejeong/6.-skeleton-ui))<br/>
 
-(3/22) 아직 다듬어야 하는 기능들이 더 있어서 추가적으로 작업을 할 생각이다.<br/>
-반응형이 아쉬워서 styled-components ThemeProvider를 적용했다. 해당 내용은 블로깅 했다.<br/>
+(3/22) 아직 다듬어야 하는 기능들이 더 있어서 추가적으로 작업을 할 생각입니다.<br/>
+반응형이 아쉬워서 styled-components ThemeProvider를 적용했습니다. 해당 내용은 블로깅 했습니다.<br/>
 (https://velog.io/@hyejeong/styled-components-ThemeProvider-%EC%A0%81%EC%9A%A9%ED%95%98%EA%B8%B0)<br/>
 
-(3/23) Toast Message 기능을 추가했다.<br/>
+(3/23) Toast Message 기능을 추가했습니다.<br/>
 (https://velog.io/@hyejeong/Toast-Message)<br/>
 
 (3/24) Redux 상태관리<br/>
-상태 관리를 해야할 데이터가 많지 않지만 연습을 위해 Redux, Redux Toolkit을 사용했다.
+상태 관리를 해야할 데이터가 많지 않지만 연습을 위해 Redux, Redux Toolkit을 사용했습니다.
