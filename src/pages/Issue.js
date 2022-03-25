@@ -4,10 +4,16 @@ import { useNavigate, useParams } from 'react-router-dom';
 import IssueCard from '../components/IssueCard';
 import styled from 'styled-components';
 import { Octokit } from '@octokit/core';
+import { useSelector, useDispatch } from 'react-redux';
+import { getSwitchState } from '../redux/toggleReducer';
 
 const octokit = new Octokit({ auth: `${process.env.REACT_APP_GITHUB_TOKEN}` });
 
 const Issue = (props) => {
+  const dispatch = useDispatch();
+  const isSwitchOn = useSelector((state) => state.toggleReducer.isSwitchOn);
+  const theme = useSelector((state) => state.theme);
+
   const { user, repo } = useParams();
   const navigate = useNavigate();
   const [issues, setIssues] = useState();
@@ -36,20 +42,26 @@ const Issue = (props) => {
     });
   }, [user, repo]);
 
+  useEffect(() => {
+    dispatch(getSwitchState());
+  });
+
   return (
     <IssueComponent>
-      <MainButton onClick={goToMain}>Main</MainButton>
+      <MainButton isSwitchOn={isSwitchOn} theme={theme} onClick={goToMain}>
+        Main
+      </MainButton>
       <UserInfo>
         {issues?.length > 0 ? (
           <Avatar src={`${issues[0].user.avatar_url}`} alt="photo" />
         ) : (
           ''
         )}
-        <RepoInfo>
+        <RepoInfo isSwitchOn={isSwitchOn} theme={theme}>
           {user}'s {repo} Issues
         </RepoInfo>
       </UserInfo>
-      <IssueContainer>
+      <IssueContainer isSwitchOn={isSwitchOn} theme={theme}>
         {issues?.map((issue, index) => (
           <IssueCard issue={issue} key={index} user={user} repo={repo} />
         ))}
@@ -71,27 +83,33 @@ const UserInfo = styled.section`
 
 const MainButton = styled.button`
   border: none;
-  background: ${({ theme }) => theme.lightversion.secondary};
+  background: ${(props) =>
+    props.isSwitchOn
+      ? props.theme.darkversion.cardBg
+      : props.theme.lightversion.secondary};
   width: 60px;
   height: 40px;
-  font-size: ${({ theme }) => theme.fontSize.md};
-  color: ${({ theme }) => theme.lightversion.fontSecondary};
+  font-size: ${(props) => props.theme.fontSize.md};
+  color: ${(props) => props.theme.lightversion.fontSecondary};
   border-radius: 10px;
   position: absolute;
   top: 10px;
   left: 20px;
   &:hover {
-    background: ${({ theme }) => theme.lightversion.hover};
-    color: ${({ theme }) => theme.lightversion.fontPrimary};
+    background: ${(props) =>
+      props.isSwitchOn
+        ? props.theme.darkversion.cardDV
+        : props.theme.lightversion.hover};
+    color: ${(props) => props.theme.lightversion.fontPrimary};
     cursor: pointer;
   }
-  @media ${({ theme }) => theme.device.base} {
-    font-size: ${({ theme }) => theme.fontSize.base};
+  @media ${(props) => props.theme.windowSize.base} {
+    font-size: ${(props) => props.theme.fontSize.base};
     width: 50px;
     left: 15px;
   }
-  @media ${({ theme }) => theme.device.small} {
-    font-size: ${({ theme }) => theme.fontSize.sm};
+  @media ${(props) => props.theme.windowSize.small} {
+    font-size: ${(props) => props.theme.fontSize.sm};
     width: 40px;
     left: 10px;
   }
@@ -100,13 +118,17 @@ const MainButton = styled.button`
 const RepoInfo = styled.span`
   text-align: center;
   margin-left: 10px;
-  font-size: ${({ theme }) => theme.fontSize.lg};
+  font-size: ${(props) => props.theme.fontSize.lg};
+  color: ${(props) =>
+    props.isSwitchOn
+      ? props.theme.darkversion.fontPrimary
+      : props.theme.lightversion.fontPrimary};
   font-weight: 600;
-  @media ${({ theme }) => theme.device.base} {
-    font-size: ${({ theme }) => theme.fontSize.md};
+  @media ${(props) => props.theme.windowSize.base} {
+    font-size: ${(props) => props.theme.fontSize.md};
   }
-  @media ${({ theme }) => theme.device.small} {
-    font-size: ${({ theme }) => theme.fontSize.base};
+  @media ${(props) => props.theme.windowSize.small} {
+    font-size: ${(props) => props.theme.fontSize.base};
   }
 `;
 
@@ -132,9 +154,13 @@ const IssueComponent = styled.div`
 const IssueContainer = styled.ul`
   margin: 0;
   padding: 20px;
-  width: 90%;
+  width: 100%;
   height: 90%;
-  border: 1px solid #ddd;
+  border: 1px solid
+    ${(props) =>
+      props.isSwitchOn
+        ? props.theme.darkversion.cardDV
+        : props.theme.lightversion.secondary};
   display: flex;
   flex-direction: column;
   overflow: scroll;

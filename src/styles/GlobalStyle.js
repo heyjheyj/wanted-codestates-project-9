@@ -9,7 +9,11 @@ const GlobalStyle = createGlobalStyle`
 
   body {
     font-family: "Helvetica", "Arial", sans-serif;
-    line-height: 1.5;
+    line-height: 1.2;
+  }
+  a {
+    text-decoration: none;
+    color: inherit;
   }
 `;
 

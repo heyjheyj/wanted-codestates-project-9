@@ -4,7 +4,8 @@ import { useSelector } from 'react-redux';
 
 const Skeleton = (props) => {
   const isSwitchOn = useSelector((state) => state.toggleReducer.isSwitchOn);
-  return <Item isSwitchOn={isSwitchOn} />;
+  const theme = useSelector((state) => state.theme);
+  return <Item isSwitchOn={isSwitchOn} theme={theme} />;
 };
 
 export default Skeleton;
@@ -25,9 +26,10 @@ const Item = styled.li`
   height: 92px;
   width: 45%;
   border-radius: 10px;
-  background-color: ${(props) => (props.isSwitchOn ? '#525252' : '#f1f1f1')};
+  background-color: ${(props) =>
+    props.isSwitchOn ? props.theme.darkversion.cardBg : '#f1f1f1'};
   animation: ${shine} 1s infinite;
-  @media ${({ theme }) => theme.device.base} {
+  @media ${(props) => props.theme.windowSize.base} {
     width: 90%;
     margin: auto;
     margin-top: 5px;

@@ -7,7 +7,7 @@ export const notiReducer = createSlice({
   initialState,
   reducers: {
     clearNoti: (state) => {
-      state.data.splice(0, 5);
+      state.data = [];
     },
     addNoti: (state, actions) => {
       const { type, description, dismissTime } = actions.payload;

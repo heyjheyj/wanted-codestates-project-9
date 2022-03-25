@@ -16,7 +16,7 @@ const Notification = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (notification?.length > 5) {
+    if (notification?.length > 0) {
       spliceArray();
     }
     return () => {

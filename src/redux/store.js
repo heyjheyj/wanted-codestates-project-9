@@ -3,6 +3,7 @@ import repoReducer from './repoReducer';
 import notiReducer from './notiReducer';
 import issueReducer from './issueReducer';
 import toggleReducer from './toggleReducer';
+import theme from './theme';
 
 export default configureStore({
   reducer: {
@@ -10,5 +11,6 @@ export default configureStore({
     notifications: notiReducer,
     issueReducer: issueReducer,
     toggleReducer: toggleReducer,
+    theme: theme,
   },
 });

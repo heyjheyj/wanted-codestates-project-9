@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 
 const ItemCard = (props) => {
   const isSwitchOn = useSelector((state) => state.toggleReducer.isSwitchOn);
+  const theme = useSelector((state) => state.theme);
 
   const selectRepo = () => {
     if (props.repo.open_issues < 1) {
@@ -25,33 +26,61 @@ const ItemCard = (props) => {
           onClick={selectRepo}
           able={props.repo.open_issues > 0 ? 'able' : 'unable'}
           isSwitchOn={isSwitchOn}
+          theme={theme}
         >
-          <User>
+          <User theme={theme} isSwitchOn={isSwitchOn}>
             <UserProfile
               src={`http://github.com/${props.repo.owner.login}.png`}
             />
-            <UserName>{props.repo.owner.login}</UserName>
-            {props.repo.open_issues > 0 ? '' : <NoIssues>No Issues</NoIssues>}
+            <UserName theme={theme} isSwitchOn={isSwitchOn}>
+              {props.repo.owner.login}
+            </UserName>
+            {props.repo.open_issues > 0 ? (
+              ''
+            ) : (
+              <NoIssues theme={theme} isSwitchOn={isSwitchOn}>
+                No Issues
+              </NoIssues>
+            )}
           </User>
-          <Repository>{props.repo.name}</Repository>
+          <Repository theme={theme} isSwitchOn={isSwitchOn}>
+            {props.repo.name}
+          </Repository>
           {props.repo.language && (
-            <LanguageInfo>
-              Language: <Language>{props.repo.language}</Language>
+            <LanguageInfo theme={theme} isSwitchOn={isSwitchOn}>
+              Language:{' '}
+              <Language theme={theme} isSwitchOn={isSwitchOn}>
+                {props.repo.language}
+              </Language>
             </LanguageInfo>
           )}
         </Item>
       ) : (
-        <SelectedItem onClick={() => props.moveToSelectedRepo(props.repo)}>
+        <SelectedItem
+          theme={theme}
+          isSwitchOn={isSwitchOn}
+          onClick={() => props.moveToSelectedRepo(props.repo)}
+        >
           <SelectedUser>
             <UserSection>
               <UserProfile
                 src={`http://github.com/${props.repo.owner.login}.png`}
               />
-              <UserName>{props.repo.owner.login}</UserName>
+              <UserName theme={theme} isSwitchOn={isSwitchOn}>
+                {props.repo.owner.login}
+              </UserName>
             </UserSection>
-            <DeleteButton onClick={deleteRepo}>삭제</DeleteButton>
+            <DeleteButton
+              theme={theme}
+              isSwitchOn={isSwitchOn}
+              onClick={deleteRepo}
+            >
+              삭제
+            </DeleteButton>
           </SelectedUser>
-          <Repository>{props.repo.name}</Repository>
+          <Repository theme={theme} isSwitchOn={isSwitchOn}>
+            {props.repo.name}
+          </Repository>
         </SelectedItem>
       )}
     </>
@@ -65,16 +94,29 @@ const Item = styled.li`
   margin: 3px;
   padding: 6px;
   width: 45%;
-  border: 1px solid #ddd;
+  border: 1px solid
+    ${(props) =>
+      props.isSwitchOn
+        ? props.theme.darkversion.cardDV
+        : props.theme.lightversion.secondary};
   border-radius: 10px;
   overflow: hidden;
-  background-color: ${(props) => (props.able === 'able' ? 'white' : '#f0f0f0')};
+  background-color: ${(props) =>
+    props.able === 'able'
+      ? props.isSwitchOn
+        ? props.theme.darkversion.cardBg
+        : props.theme.lightversion.background
+      : ''};
   &:hover {
     background-color: ${(props) =>
-      props.able === 'able' ? '#00a0ff10' : '#f0f0f0'};
+      props.able === 'able'
+        ? props.isSwitchOn
+          ? props.theme.darkversion.hover
+          : props.theme.lightversion.hover
+        : ''};
     cursor: ${(props) => props.able === 'able' && 'pointer'};
   }
-  @media ${({ theme }) => theme.device.base} {
+  @media ${(props) => props.theme.windowSize.base} {
     width: 90%;
     margin: auto;
     margin-top: 5px;
@@ -86,14 +128,22 @@ const User = styled.div`
   flex-direction: row;
   align-items: flex-end;
   padding-bottom: 5px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid
+    ${(props) =>
+      props.isSwitchOn
+        ? props.theme.darkversion.cardDV
+        : props.theme.lightversion.secondary};
   position: relative;
 `;
 
 const UserProfile = styled.img`
   width: 30px;
   height: 30px;
-  border: 1px solid #f0f0f0;
+  border: 1px solid
+    ${(props) =>
+      props.isSwitchOn
+        ? props.theme.darkversion.cardDV
+        : props.theme.lightversion.secondary};
   border-radius: 50%;
   margin-left: 5px;
 `;
@@ -109,8 +159,8 @@ const NoIssues = styled.span`
   color: #00a0ff;
   position: absolute;
   right: 10px;
-  @media ${({ theme }) => theme.device.large} {
-    opacity: 0;
+  @media ${(props) => props.theme.windowSize.large} {
+    font-size: ${(props) => props.theme.fontSize.sm};
   }
 `;
 
@@ -119,12 +169,19 @@ const Repository = styled.span`
   display: block;
   padding: 5px;
   font-weight: 500;
+  color: ${(props) =>
+    props.isSwitchOn
+      ? props.theme.darkversion.fontPrimary
+      : props.theme.lightversion.fontPrimary};
 `;
 
 const LanguageInfo = styled.span`
   font-size: 14px;
   display: block;
-  color: gray;
+  color: ${(props) =>
+    props.isSwitchOn
+      ? props.theme.darkversion.cardDV
+      : props.theme.lightversion.fontSecondary};
   padding: 0 5px;
 `;
 
@@ -154,12 +211,22 @@ const SelectedItem = styled.li`
   width: 90%;
   margin: auto;
   margin-top: 5px;
-  border: 1px solid #ddd;
+  border: 1px solid
+    ${(props) =>
+      props.isSwitchOn
+        ? props.theme.darkversion.cardDV
+        : props.theme.lightversion.secondary};
   border-radius: 10px;
   overflow: hidden;
-  background-color: white;
+  background-color: ${(props) =>
+    props.isSwitchOn
+      ? props.theme.darkversion.cardBg
+      : props.theme.lightversion.background};
   &:hover {
-    background-color: #f0f0f0;
+    background-color: ${(props) =>
+      props.isSwitchOn
+        ? props.theme.darkversion.hover
+        : props.theme.lightversion.hover2};
     cursor: pointer;
   }
 `;

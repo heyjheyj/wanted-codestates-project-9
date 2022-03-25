@@ -15,7 +15,7 @@ import {
   deleteRepo,
   saveUserInfo,
 } from '../redux/issueReducer';
-// import Toggle from '../components/Toggle';
+import Toggle from '../components/Toggle';
 
 const Search = () => {
   const repositories = useSelector((state) => state.repository.data);
@@ -24,6 +24,7 @@ const Search = () => {
   const issueRepo = useSelector((state) => state.issueReducer.selectedRepo);
   const userInfo = useSelector((state) => state.issueReducer.userInfo);
   const isSwitchOn = useSelector((state) => state.toggleReducer.isSwitchOn);
+  const theme = useSelector((state) => state.theme);
 
   const dispatch = useDispatch();
   const [keyword, setKeyword] = useState('');
@@ -127,21 +128,23 @@ const Search = () => {
 
   return (
     <SearchComponent>
-      {/* <ToggleWrap>
+      <ToggleWrap>
         <Toggle />
-      </ToggleWrap> */}
+      </ToggleWrap>
       <Header>
-        <Title isSwitchOn={isSwitchOn} onClick={moveToMain}>
+        <Title isSwitchOn={isSwitchOn} onClick={moveToMain} theme={theme}>
           Github Repository Search
         </Title>
         <SearchForm onSubmit={onSearch}>
           <SearchInput
-            isSwitchOn={isSwitchOn}
             ref={inputRef}
             type="text"
             autoFocus
+            isSwitchOn={isSwitchOn}
+            theme={theme}
           />
           <SearchButton
+            theme={theme}
             isSwitchOn={isSwitchOn}
             type="submit"
             value="검색"
@@ -149,17 +152,17 @@ const Search = () => {
           />
         </SearchForm>
       </Header>
-      <SearchResult>
+      <SearchResult theme={theme} isSwitchOn={isSwitchOn}>
         <ResultRepository selectedRepo={issueRepo}>
           {isLoading ? (
-            <RepositoryList>
+            <RepositoryList theme={theme}>
               {loadingData.map((v, i) => (
                 <Skeleton key={i} />
               ))}
             </RepositoryList>
           ) : (
             <>
-              <RepositoryList>
+              <RepositoryList theme={theme}>
                 {repositories?.length > 0 &&
                   repositories.map((repo, index) => (
                     <ItemCard
@@ -182,8 +185,10 @@ const Search = () => {
           )}
         </ResultRepository>
         {issueRepo.length > 0 && (
-          <SaveRepo>
-            <SaveRepoTitle>Saved Repository</SaveRepoTitle>
+          <SaveRepo theme={theme} isSwitchOn={isSwitchOn}>
+            <SaveRepoTitle theme={theme} isSwitchOn={isSwitchOn}>
+              Saved Repository
+            </SaveRepoTitle>
             {issueRepo?.map((repo, index) => (
               <ItemCard
                 key={index}
@@ -211,12 +216,12 @@ const SearchComponent = styled.div`
   min-width: 600px;
 `;
 
-// const ToggleWrap = styled.div`
-//   width: auto;
-//   height: auto;
-//   position: absolute;
-//   top: 0;
-// `;
+const ToggleWrap = styled.div`
+  width: auto;
+  height: auto;
+  position: absolute;
+  top: 0;
+`;
 
 const Header = styled.header`
   display: flex;
@@ -230,14 +235,14 @@ const Title = styled.span`
   height: 100%;
   padding: 0;
   cursor: pointer;
-  color: ${(props) => props.isSwitchOn && '#f0f0f0'};
-  font-size: ${({ theme }) => theme.fontSize.lg};
+  color: ${(props) => props.isSwitchOn && props.theme.darkversion.fontPrimary};
+  font-size: ${(props) => props.theme.fontSize.lg};
   font-weight: 600;
-  @media ${({ theme }) => theme.device.base} {
-    font-size: ${({ theme }) => theme.fontSize.md};
+  @media ${(props) => props.theme.windowSize.base} {
+    font-size: ${(props) => props.theme.fontSize.md};
   }
-  @media ${({ theme }) => theme.device.small} {
-    font-size: ${({ theme }) => theme.fontSize.base};
+  @media ${(props) => props.theme.windowSize.small} {
+    font-size: ${(props) => props.theme.fontSize.base};
   }
 `;
 
@@ -253,19 +258,24 @@ const SearchInput = styled.input`
   width: 80%;
   height: 100%;
   border: none;
-  border-bottom: 1px solid #ddd;
-  color: ${(props) => props.isSwitchOn && '#f0f0f0'};
-  background-color: ${(props) => props.isSwitchOn && '#121212'};
-  font-size: ${({ theme }) => theme.fontSize.md};
+  border-bottom: 1px solid
+    ${(props) =>
+      props.isSwitchOn
+        ? props.theme.darkversion.secondary
+        : props.theme.lightversion.secondary};
+  color: ${(props) => props.isSwitchOn && props.theme.darkversion.fontPrimary};
+  background-color: ${(props) =>
+    props.isSwitchOn && props.theme.darkversion.background};
+  font-size: ${(props) => props.theme.fontSize.md};
   &:focus {
     outline: none;
   }
-  @media ${({ theme }) => theme.device.base} {
+  @media ${(props) => props.theme.windowSize.base} {
     margin-left: 10px;
-    font-size: ${({ theme }) => theme.fontSize.base};
+    font-size: ${(props) => props.theme.fontSize.base};
   }
-  @media ${({ theme }) => theme.device.small} {
-    font-size: ${({ theme }) => theme.fontSize.sm};
+  @media ${(props) => props.theme.windowSize.small} {
+    font-size: ${(props) => props.theme.fontSize.sm};
     margin-left: 10px;
   }
 `;
@@ -275,23 +285,24 @@ const SearchButton = styled.input`
   margin-left: 5px;
   border: none;
   border-radius: 3px;
-  font-size: ${({ theme }) => theme.fontSize.md};
-  color: ${(props) => (props.isSwitchOn ? '#f0f0f0' : 'gray')};
+  font-size: ${(props) => props.theme.fontSize.md};
+  color: ${(props) =>
+    props.isSwitchOn ? props.theme.darkversion.fontPrimary : 'gray'};
   background-color: ${(props) => props.isSwitchOn && '#f0f0f030'};
   cursor: pointer;
   transition: transform 200ms ease-in;
   &:hover {
     transform: scale(1.05);
-    background-color: ${({ theme }) => theme.lightversion.hover};
+    background-color: ${(props) => props.theme.lightversion.hover};
     background-color: ${(props) => props.isSwitchOn && '#f0f0f080'};
-    color: ${({ theme }) => theme.lightversion.fontPrimary};
+    color: ${(props) => props.theme.lightversion.fontPrimary};
   }
-  @media ${({ theme }) => theme.device.base} {
+  @media ${(props) => props.theme.windowSize.base} {
     margin-left: 10px;
-    font-size: ${({ theme }) => theme.fontSize.base};
+    font-size: ${(props) => props.theme.fontSize.base};
   }
-  @media ${({ theme }) => theme.device.small} {
-    font-size: ${({ theme }) => theme.fontSize.sm};
+  @media ${(props) => props.theme.windowSize.small} {
+    font-size: ${(props) => props.theme.fontSize.sm};
     margin-left: 10px;
   }
 `;
@@ -311,7 +322,7 @@ const RepositoryList = styled.ul`
   flex-wrap: wrap;
   padding-bottom: 30px;
   justify-content: space-around;
-  @media ${({ theme }) => theme.device.base} {
+  @media ${(props) => props.theme.windowSize.base} {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
@@ -321,28 +332,39 @@ const RepositoryList = styled.ul`
 const SaveRepo = styled.div`
   width: 30%;
   height: 100%;
-  background-color: ${({ theme }) => theme.lightversion.secondary};
+  background-color: ${(props) =>
+    props.isSwitchOn
+      ? props.theme.darkversion.cardBg
+      : props.theme.lightversion.secondary};
   min-width: 220px;
 `;
 
 const SaveRepoTitle = styled.span`
   display: block;
+  color: ${(props) =>
+    props.isSwitchOn
+      ? props.theme.darkversion.fontPrimary
+      : props.theme.lightversion.fontPrimary};
   padding: 20px 0 10px 20px;
-  font-size: ${({ theme }) => theme.fontSize.md};
+  font-size: ${(props) => props.theme.fontSize.md};
   font-weight: 600;
-  @media ${({ theme }) => theme.device.base} {
-    font-size: ${({ theme }) => theme.fontSize.base};
+  @media ${(props) => props.theme.windowSize.base} {
+    font-size: ${(props) => props.theme.fontSize.base};
     padding: 20px 0 10px 10px;
   }
-  @media ${({ theme }) => theme.device.small} {
-    font-size: ${({ theme }) => theme.fontSize.sm};
+  @media ${(props) => props.theme.windowSize.small} {
+    font-size: ${(props) => props.theme.fontSize.sm};
   }
 `;
 
 const SearchResult = styled.div`
   width: 100%;
   height: 100%;
-  border: 1px solid ${({ theme }) => theme.lightversion.secondary};
+  border: 1px solid
+    ${(props) =>
+      props.isSwitchOn
+        ? props.theme.darkversion.secondary
+        : props.theme.lightversion.secondary};
   margin-top: 20px;
   display: flex;
   justify-content: center;

@@ -2,15 +2,14 @@ import Search from './pages/Search';
 import styled, { ThemeProvider } from 'styled-components';
 import Issue from './pages/Issue';
 import { Route, Routes } from 'react-router-dom';
-import theme from './styles/theme';
-
 import { useSelector } from 'react-redux';
 
 function App() {
   const isSwitchOn = useSelector((state) => state.toggleReducer.isSwitchOn);
+  const theme = useSelector((state) => state.theme);
 
   return (
-    <AppComponent isSwitchOn={isSwitchOn}>
+    <AppComponent isSwitchOn={isSwitchOn} theme={theme}>
       <ThemeProvider theme={theme}>
         <Routes>
           <Route path="/" element={<Search />} />
@@ -30,9 +29,5 @@ const AppComponent = styled.div`
   flex-direction: column;
   align-items: center;
   background-color: ${(props) =>
-    props.isSwitchOn && theme.darkversion.background};
-  a {
-    text-decoration: none;
-    color: inherit;
-  }
+    props.isSwitchOn && props.theme.darkversion.background};
 `;

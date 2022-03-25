@@ -1,7 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 
 const IssueCard = ({ issue, user, repo }) => {
+  const theme = useSelector((state) => state.theme);
+  const isSwitchOn = useSelector((state) => state.toggleReducer.isSwitchOn);
+
   const convertDate = () => {
     let date = issue.created_at;
     let result = date.replace('T', ' ').substring(0, 19);
@@ -10,12 +14,20 @@ const IssueCard = ({ issue, user, repo }) => {
 
   return (
     <a href={`https://github.com/${user}/${repo}/issues/${issue.number}`}>
-      <Card>
-        <IssueTitle>{issue.title}</IssueTitle>
-        <IssueContent>
-          <IssueNumber>#{issue.number}, </IssueNumber>
+      <Card isSwitchOn={isSwitchOn}>
+        <IssueTitle isSwitchOn={isSwitchOn} theme={theme}>
+          {issue.title}
+        </IssueTitle>
+        <IssueContent isSwitchOn={isSwitchOn} theme={theme}>
+          <IssueNumber theme={theme} isSwitchOn={isSwitchOn}>
+            #{issue.number},{' '}
+          </IssueNumber>
           이슈 생성일: {convertDate()},{' '}
-          <State state={issue.closed_at === null ? 'open' : 'close'}>
+          <State
+            theme={theme}
+            isSwitchOn={isSwitchOn}
+            state={issue.closed_at === null ? 'open' : 'close'}
+          >
             {issue.closed_at === null ? 'Open' : 'Close'}
           </State>
         </IssueContent>
@@ -34,34 +46,48 @@ const Card = styled.li`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background-color: #f0f0f0;
+  background-color: ${(props) =>
+    props.isSwitchOn
+      ? props.theme.darkversion.cardBg
+      : props.theme.lightversion.hover2};
   border-radius: 10px;
   &:hover {
-    background: #ddd;
+    background: ${(props) =>
+      props.isSwitchOn
+        ? props.theme.darkversion.hover
+        : props.theme.lightversion.hover};
     cursor: pointer;
   }
 `;
 
 const IssueTitle = styled.span`
   margin: 0 15px;
-  font-size: ${({ theme }) => theme.fontSize.md};
+  color: ${(props) =>
+    props.isSwitchOn
+      ? props.theme.darkversion.fontPrimary
+      : props.theme.lightversion.fontPrimary};
+  font-size: ${(props) => props.theme.fontSize.md};
   font-weight: 600;
-  @media ${({ theme }) => theme.device.base} {
-    font-size: ${({ theme }) => theme.fontSize.base};
+  @media ${(props) => props.theme.windowSize.base} {
+    font-size: ${(props) => props.theme.fontSize.base};
   }
-  @media ${({ theme }) => theme.device.small} {
-    font-size: ${({ theme }) => theme.fontSize.sm};
+  @media ${(props) => props.theme.windowSize.small} {
+    font-size: ${(props) => props.theme.fontSize.sm};
   }
 `;
 
 const IssueContent = styled.span`
-  font-size: ${({ theme }) => theme.fontSize.base};
+  color: ${(props) =>
+    props.isSwitchOn
+      ? props.theme.darkversion.cardDV
+      : props.theme.lightversion.fontPrimary};
+  font-size: ${(props) => props.theme.fontSize.base};
   margin-left: 15px;
-  @media ${({ theme }) => theme.device.base} {
-    font-size: ${({ theme }) => theme.fontSize.sm};
+  @media ${(props) => props.theme.windowSize.base} {
+    font-size: ${(props) => props.theme.fontSize.sm};
   }
-  @media ${({ theme }) => theme.device.small} {
-    font-size: ${({ theme }) => theme.fontSize.xs};
+  @media ${(props) => props.theme.windowSize.small} {
+    font-size: ${(props) => props.theme.fontSize.xs};
   }
 `;
 

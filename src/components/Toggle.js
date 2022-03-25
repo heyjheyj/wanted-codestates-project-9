@@ -1,14 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { switchOn } from '../redux/toggleReducer';
+import { switchOn, getSwitchState } from '../redux/toggleReducer';
 
 const Toggle = (props) => {
   const dispatch = useDispatch();
   const isSwitchOn = useSelector((state) => state.toggleReducer.isSwitchOn);
 
-  const toggleSwitch = () => dispatch(switchOn());
+  const toggleSwitch = () => {
+    dispatch(switchOn());
+  };
+
+  useEffect(() => {
+    dispatch(getSwitchState());
+  }, [dispatch]);
 
   return (
     <ToggleSwitch>
@@ -65,7 +71,7 @@ const ToggleInner = styled.span`
     padding: 0;
     box-sizing: border-box;
     content: '';
-    background-color: #121212;
+    background-color: #0e1116;
   }
   &:after {
     float: left;
