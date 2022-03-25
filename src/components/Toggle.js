@@ -17,24 +17,45 @@ const Toggle = (props) => {
   }, [dispatch]);
 
   return (
-    <ToggleSwitch>
-      <Checkbox
-        type="checkbox"
-        id="toggleSwitch"
-        onClick={toggleSwitch}
-        isSwitchOn={isSwitchOn}
-      />
-      <Label htmlFor="toggleSwitch" isSwitchOn={isSwitchOn}>
-        <ToggleInner isSwitchOn={isSwitchOn} />
-        <Switch isSwitchOn={isSwitchOn} />
-      </Label>
-    </ToggleSwitch>
+    <ToggleContainer>
+      {isSwitchOn ? <Dark>🌙</Dark> : <Light>☀️</Light>}
+      <ToggleSwitch>
+        <Checkbox
+          type="checkbox"
+          id="toggleSwitch"
+          onClick={toggleSwitch}
+          isSwitchOn={isSwitchOn}
+        />
+        <Label htmlFor="toggleSwitch" isSwitchOn={isSwitchOn}>
+          <ToggleInner isSwitchOn={isSwitchOn} />
+          <Switch isSwitchOn={isSwitchOn} />
+        </Label>
+      </ToggleSwitch>
+    </ToggleContainer>
   );
 };
 
 export default Toggle;
 
+const ToggleContainer = styled.div`
+  width: auto;
+  height: auto;
+`;
+
+const Light = styled.span`
+  position: relative;
+  font-size: 22px;
+  top: 7px;
+`;
+
+const Dark = styled.span`
+  position: relative;
+  font-size: 20px;
+  top: 6px;
+`;
+
 const ToggleSwitch = styled.div`
+  left: 8px;
   position: relative;
   width: 50px;
   display: inline-block;
