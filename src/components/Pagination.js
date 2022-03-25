@@ -1,7 +1,11 @@
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 
+import { useSelector } from 'react-redux';
+
 function PageComponent({ page, setPage, repository }) {
+  const theme = useSelector((state) => state.theme);
+  const isSwitchOn = useSelector((state) => state.toggleReducer.isSwitchOn);
   const [start, setStart] = useState(page);
   const [last, setLast] = useState();
 
@@ -24,13 +28,20 @@ function PageComponent({ page, setPage, repository }) {
   return (
     <>
       <Nav>
-        <Button onClick={() => setPage(page - 1)} disabled={page === 1}>
+        <Button
+          isSwitchOn={isSwitchOn}
+          theme={theme}
+          onClick={() => setPage(page - 1)}
+          disabled={page === 1}
+        >
           &lt;
         </Button>
         {Array(10)
           .fill()
           .map((_, i) => (
             <Button
+              isSwitchOn={isSwitchOn}
+              theme={theme}
               key={i + 1}
               onClick={() => setPage(start + i)}
               aria-current={page === i + start ? 'page' : null}
@@ -38,7 +49,12 @@ function PageComponent({ page, setPage, repository }) {
               {i + start}
             </Button>
           ))}
-        <Button onClick={() => setPage(page + 1)} disabled={page === last}>
+        <Button
+          isSwitchOn={isSwitchOn}
+          theme={theme}
+          onClick={() => setPage(page + 1)}
+          disabled={page === last}
+        >
           &gt;
         </Button>
       </Nav>
@@ -58,18 +74,24 @@ const Button = styled.button`
   border-radius: 8px;
   padding: 8px;
   margin: 0;
-  background: #ddd;
+  background: ${(props) =>
+    props.isSwitchOn
+      ? props.theme.darkversion.cardDV
+      : props.theme.lightversion.secondary};
   color: black;
   font-size: 1rem;
 
   &:hover {
-    background: #00a0ff50;
+    background: #00a0ff70;
     cursor: pointer;
     transform: translateY(-2px);
   }
 
   &[disabled] {
-    background: #ddd;
+    background: ${(props) =>
+      props.isSwitchOn
+        ? props.theme.darkversion.cardDV
+        : props.theme.lightversion.secondary};
     cursor: revert;
     transform: revert;
   }

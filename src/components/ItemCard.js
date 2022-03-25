@@ -190,7 +190,10 @@ const Language = styled.span`
   width: auto;
   text-align: center;
   padding: 0 2px 0 2px;
-  background-color: #ddd;
+  background-color: ${(props) =>
+    props.isSwitchOn
+      ? props.theme.darkversion.cardDV
+      : props.theme.lightversion.secondary};
   font-size: 14px;
   border-radius: 5px;
   color: black;
