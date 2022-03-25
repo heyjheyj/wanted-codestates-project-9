@@ -12,7 +12,7 @@ const Notification = () => {
   const spliceArray = useCallback(() => {
     setTimeout(() => {
       dispatch(clearNoti());
-    }, 10000);
+    }, 18000);
   }, [dispatch]);
 
   useEffect(() => {

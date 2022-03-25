@@ -21,7 +21,6 @@ const Issue = (props) => {
   };
 
   const goToMain = () => {
-    props.setRepository([]);
     navigate('/');
   };
 

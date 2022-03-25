@@ -12,7 +12,6 @@ const initialState = {
 export const getData = createAsyncThunk(
   'data/searchData',
   async (searchinfo) => {
-    console.log(searchinfo);
     const { keyword, page } = searchinfo;
     let result = await octokit.request(
       `GET /search/repositories?page=${page}`,

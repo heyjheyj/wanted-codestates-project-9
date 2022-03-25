@@ -1,7 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 
 const ItemCard = (props) => {
+  const isSwitchOn = useSelector((state) => state.toggleReducer.isSwitchOn);
+
   const selectRepo = () => {
     if (props.repo.open_issues < 1) {
       return;
@@ -21,6 +24,7 @@ const ItemCard = (props) => {
         <Item
           onClick={selectRepo}
           able={props.repo.open_issues > 0 ? 'able' : 'unable'}
+          isSwitchOn={isSwitchOn}
         >
           <User>
             <UserProfile
@@ -114,7 +118,7 @@ const Repository = styled.span`
   font-size: 16px;
   display: block;
   padding: 5px;
-  font-weight: 600;
+  font-weight: 500;
 `;
 
 const LanguageInfo = styled.span`

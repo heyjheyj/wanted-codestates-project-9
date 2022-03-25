@@ -15,15 +15,17 @@ import {
   deleteRepo,
   saveUserInfo,
 } from '../redux/issueReducer';
+// import Toggle from '../components/Toggle';
 
 const Search = () => {
-  const dispatch = useDispatch();
   const repositories = useSelector((state) => state.repository.data);
   const isLoading = useSelector((state) => state.repository.isLoading);
   const notification = useSelector((state) => state.notifications.data);
   const issueRepo = useSelector((state) => state.issueReducer.selectedRepo);
   const userInfo = useSelector((state) => state.issueReducer.userInfo);
+  const isSwitchOn = useSelector((state) => state.toggleReducer.isSwitchOn);
 
+  const dispatch = useDispatch();
   const [keyword, setKeyword] = useState('');
   const [page, setPage] = useState(1);
 
@@ -125,11 +127,26 @@ const Search = () => {
 
   return (
     <SearchComponent>
+      {/* <ToggleWrap>
+        <Toggle />
+      </ToggleWrap> */}
       <Header>
-        <Title onClick={moveToMain}>Github Repository Search</Title>
+        <Title isSwitchOn={isSwitchOn} onClick={moveToMain}>
+          Github Repository Search
+        </Title>
         <SearchForm onSubmit={onSearch}>
-          <SearchInput ref={inputRef} type="text" autoFocus />
-          <SearchButton type="submit" value="검색" onClick={onSearch} />
+          <SearchInput
+            isSwitchOn={isSwitchOn}
+            ref={inputRef}
+            type="text"
+            autoFocus
+          />
+          <SearchButton
+            isSwitchOn={isSwitchOn}
+            type="submit"
+            value="검색"
+            onClick={onSearch}
+          />
         </SearchForm>
       </Header>
       <SearchResult>
@@ -194,6 +211,13 @@ const SearchComponent = styled.div`
   min-width: 600px;
 `;
 
+// const ToggleWrap = styled.div`
+//   width: auto;
+//   height: auto;
+//   position: absolute;
+//   top: 0;
+// `;
+
 const Header = styled.header`
   display: flex;
   flex-direction: row;
@@ -206,6 +230,7 @@ const Title = styled.span`
   height: 100%;
   padding: 0;
   cursor: pointer;
+  color: ${(props) => props.isSwitchOn && '#f0f0f0'};
   font-size: ${({ theme }) => theme.fontSize.lg};
   font-weight: 600;
   @media ${({ theme }) => theme.device.base} {
@@ -229,6 +254,8 @@ const SearchInput = styled.input`
   height: 100%;
   border: none;
   border-bottom: 1px solid #ddd;
+  color: ${(props) => props.isSwitchOn && '#f0f0f0'};
+  background-color: ${(props) => props.isSwitchOn && '#121212'};
   font-size: ${({ theme }) => theme.fontSize.md};
   &:focus {
     outline: none;
@@ -249,12 +276,14 @@ const SearchButton = styled.input`
   border: none;
   border-radius: 3px;
   font-size: ${({ theme }) => theme.fontSize.md};
-  color: ${({ theme }) => theme.lightversion.fontSecondary};
+  color: ${(props) => (props.isSwitchOn ? '#f0f0f0' : 'gray')};
+  background-color: ${(props) => props.isSwitchOn && '#f0f0f030'};
   cursor: pointer;
   transition: transform 200ms ease-in;
   &:hover {
     transform: scale(1.05);
     background-color: ${({ theme }) => theme.lightversion.hover};
+    background-color: ${(props) => props.isSwitchOn && '#f0f0f080'};
     color: ${({ theme }) => theme.lightversion.fontPrimary};
   }
   @media ${({ theme }) => theme.device.base} {

@@ -18,7 +18,6 @@ export const getIssues = createAsyncThunk(
       `GET /repos/${user}/${repo}/issues?page=${page}&per_page=100`,
     );
     let data = res.data;
-    console.log(data);
     return data;
   },
 );
@@ -51,7 +50,6 @@ export const issueReducer = createSlice({
     saveUserInfo: (state, actions) => {
       const repo = actions.payload;
       let [userName, repoName] = repo.full_name.split('/');
-      console.log(userName, repoName);
       let data = {
         id: repo.id,
         user: userName,

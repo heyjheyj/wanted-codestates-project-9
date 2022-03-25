@@ -2,34 +2,19 @@ import Search from './pages/Search';
 import styled, { ThemeProvider } from 'styled-components';
 import Issue from './pages/Issue';
 import { Route, Routes } from 'react-router-dom';
-import { useState } from 'react';
 import theme from './styles/theme';
 
+import { useSelector } from 'react-redux';
+
 function App() {
-  const [repository, setRepository] = useState([]);
-  const [userInfo, setUserInfo] = useState([]);
+  const isSwitchOn = useSelector((state) => state.toggleReducer.isSwitchOn);
 
   return (
-    <AppComponent>
+    <AppComponent isSwitchOn={isSwitchOn}>
       <ThemeProvider theme={theme}>
         <Routes>
-          <Route
-            path="/"
-            element={
-              <Search
-                repository={repository}
-                setRepository={setRepository}
-                setUserInfo={setUserInfo}
-                userInfo={userInfo}
-              />
-            }
-          />
-          <Route
-            path="/issue/:user/:repo"
-            element={
-              <Issue userInfo={userInfo} setRepository={setRepository} />
-            }
-          />
+          <Route path="/" element={<Search />} />
+          <Route path="/issue/:user/:repo" element={<Issue />} />
         </Routes>
       </ThemeProvider>
     </AppComponent>
@@ -44,6 +29,8 @@ const AppComponent = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: ${(props) =>
+    props.isSwitchOn && theme.darkversion.background};
   a {
     text-decoration: none;
     color: inherit;
