@@ -11,13 +11,14 @@ const initialState = {
 };
 
 export const getIssues = createAsyncThunk(
-  'issueRepo/issues',
+  'issues/search',
   async (searchinfo) => {
     const { user, repo, page } = searchinfo;
     let res = await octokit.request(
       `GET /repos/${user}/${repo}/issues?page=${page}&per_page=100`,
     );
     let data = res.data;
+    console.log(data);
     return data;
   },
 );
@@ -58,11 +59,20 @@ export const issueReducer = createSlice({
       };
       state.userInfo = [...state.userInfo, data];
     },
-    extraReducers: (builder) => {
-      builder.addCase(getIssues.fulfilled, (state, action) => {
+    extraReducers: {
+      [getIssues.pending]: (state) => {
+        state.isLoading = true;
+      },
+      [getIssues.fulfilled]: (state, action) => {
+        state.isLoading = false;
         state.issues = action.payload;
         state.error = '';
-      });
+      },
+      [getIssues.rejected]: (state, action) => {
+        state.isLoading = false;
+        state.issues = [];
+        state.error = action.payload;
+      },
     },
   },
 });

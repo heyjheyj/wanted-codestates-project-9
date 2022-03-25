@@ -34,7 +34,7 @@ const Card = styled.li`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border: 1px solid #ddd;
+  background-color: #f0f0f0;
   border-radius: 10px;
   &:hover {
     background: #ddd;

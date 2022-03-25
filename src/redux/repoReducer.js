@@ -9,24 +9,6 @@ const initialState = {
   error: null,
 };
 
-// const saveCache = (word, data) => {
-//   let cache = JSON.parse(localStorage.getItem('searchResult'));
-//   const newData = {
-//     result: data,
-//     expireTime: Date.now() + 300000,
-//   };
-//   if (cache === null) {
-//     cache = {};
-//   }
-//   cache[word] = newData;
-//   localStorage.setItem(
-//     'searchResult',
-//     JSON.stringify({
-//       ...cache,
-//     }),
-//   );
-// };
-
 export const getData = createAsyncThunk(
   'data/searchData',
   async (searchinfo) => {
@@ -39,7 +21,6 @@ export const getData = createAsyncThunk(
       },
     );
     let data = result.data.items;
-    // saveCache(keyword, data);
     return data;
   },
 );
