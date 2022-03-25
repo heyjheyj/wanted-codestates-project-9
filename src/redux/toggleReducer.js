@@ -17,7 +17,11 @@ export const toggleReducer = createSlice({
     },
     getSwitchState: (state, actions) => {
       let result = JSON.parse(window.localStorage.getItem('switch'));
-      state.isSwitchOn = result.isSwitchOn;
+      if (result) {
+        state.isSwitchOn = result.isSwitchOn;
+      } else {
+        state.isSwitchOn = false;
+      }
     },
   },
 });
