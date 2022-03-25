@@ -12,7 +12,7 @@ const Issue = (props) => {
   const navigate = useNavigate();
   const [issues, setIssues] = useState();
 
-  const getIssues = async (user, repo, page) => {
+  const getIssue = async (user, repo, page) => {
     let res = await octokit.request(
       `GET /repos/${user}/${repo}/issues?page=${page}&per_page=100`,
     );
@@ -29,7 +29,7 @@ const Issue = (props) => {
     queueMicrotask(async () => {
       if (user && repo) {
         let page = 1;
-        let result = await getIssues(user, repo, page);
+        let result = await getIssue(user, repo, page);
         setIssues(result);
       } else {
         return;

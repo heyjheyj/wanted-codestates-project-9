@@ -24,7 +24,7 @@ const lightversion = {
   fontSecondary: 'gray',
   primary: '#00a0ff',
   secondary: '#ddd',
-  hover: '#00a0ff50',
+  hover: '#00a0ff30',
 };
 
 const darkversion = {
