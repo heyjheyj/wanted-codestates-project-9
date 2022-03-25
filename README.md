@@ -45,6 +45,9 @@ Github Repository 검색 및 저장하고, 저장된 Repository의 issue를 모�
 
 ![toast](https://user-images.githubusercontent.com/90097736/160073039-19368cc3-6da0-4f05-b325-c84b9781fa5c.gif)
 
+### 5. DarkMode Theme
+
+![dark1](https://user-images.githubusercontent.com/90097736/160154672-e2b7016b-644b-4930-a573-de5ab60a6abc.gif)
 
 ## :memo: 개발 log
 
@@ -64,3 +67,7 @@ Github Repository 검색 및 저장하고, 저장된 Repository의 issue를 모�
 
 (3/24) Redux 상태관리<br/>
 상태 관리를 해야할 데이터가 많지 않지만 연습을 위해 Redux, Redux Toolkit을 사용했습니다.
+
+(3/25) DarkMode theme 적용
+예전부터 정말 해보고 싶었는데, 이번 과제에 추가를 해봤습니다. 관련 내용은 블로깅 했습니다.
+(https://velog.io/@hyejeong/DarkMode-Theme)
