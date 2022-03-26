@@ -14,7 +14,7 @@ const IssueCard = ({ issue, user, repo }) => {
 
   return (
     <a href={`https://github.com/${user}/${repo}/issues/${issue.number}`}>
-      <Card isSwitchOn={isSwitchOn}>
+      <Card isSwitchOn={isSwitchOn} theme={theme}>
         <IssueTitle isSwitchOn={isSwitchOn} theme={theme}>
           {issue.title}
         </IssueTitle>

@@ -30,6 +30,8 @@ const ItemCard = (props) => {
         >
           <User theme={theme} isSwitchOn={isSwitchOn}>
             <UserProfile
+              theme={theme}
+              isSwitchOn={isSwitchOn}
               src={`http://github.com/${props.repo.owner.login}.png`}
             />
             <UserName theme={theme} isSwitchOn={isSwitchOn}>
@@ -64,6 +66,8 @@ const ItemCard = (props) => {
           <SelectedUser>
             <UserSection>
               <UserProfile
+                theme={theme}
+                isSwitchOn={isSwitchOn}
                 src={`http://github.com/${props.repo.owner.login}.png`}
               />
               <UserName theme={theme} isSwitchOn={isSwitchOn}>

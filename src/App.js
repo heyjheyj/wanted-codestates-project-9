@@ -1,5 +1,5 @@
 import Search from './pages/Search';
-import styled, { ThemeProvider } from 'styled-components';
+import styled from 'styled-components';
 import Issue from './pages/Issue';
 import { Route, Routes } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -10,12 +10,10 @@ function App() {
 
   return (
     <AppComponent isSwitchOn={isSwitchOn} theme={theme}>
-      <ThemeProvider theme={theme}>
-        <Routes>
-          <Route path="/" element={<Search />} />
-          <Route path="/issue/:user/:repo" element={<Issue />} />
-        </Routes>
-      </ThemeProvider>
+      <Routes>
+        <Route path="/" element={<Search />} />
+        <Route path="/issue/:user/:repo" element={<Issue />} />
+      </Routes>
     </AppComponent>
   );
 }
