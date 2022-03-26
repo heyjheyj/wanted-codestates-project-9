@@ -37,6 +37,18 @@ export const issueReducer = createSlice({
     getRepo: (state, actions) => {
       let result = JSON.parse(window.localStorage.getItem('repos'));
       if (result) {
+        let data = [];
+        result.map((item) => {
+          let userdata = item.full_name.split('/');
+          let useritem = {
+            id: item.id,
+            user: userdata[0],
+            repo: userdata[1],
+          };
+          data.push(useritem);
+          return data;
+        });
+        state.userInfo = data;
         state.selectedRepo = [...result];
       } else {
         state.selectedRepo = [];
