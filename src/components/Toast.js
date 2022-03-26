@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes, css } from 'styled-components';
+import { useSelector } from 'react-redux';
 
 const Toast = ({ item }) => {
   const [isFading, setIsFading] = useState(false);
+  const theme = useSelector((state) => state.theme);
+  const isSwitchOn = useSelector((state) => state.toggleReducer.isSwitchOn);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -14,7 +17,12 @@ const Toast = ({ item }) => {
   }, [item.dismissTime]);
 
   return (
-    <ToastMessage type={`${item.type}`} isFading={isFading}>
+    <ToastMessage
+      theme={theme}
+      isSwitchOn={isSwitchOn}
+      type={`${item.type}`}
+      isFading={isFading}
+    >
       {item.description}
     </ToastMessage>
   );
@@ -46,7 +54,7 @@ const ToastMessage = styled.div`
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 
-  font-size: ${({ theme }) => theme.fontSize.base};
+  font-size: ${(props) => props.theme.fontSize.base};
   display: flex;
   justify-content: center;
   align-items: center;
